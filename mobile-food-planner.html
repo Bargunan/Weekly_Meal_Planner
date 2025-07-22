@@ -1,0 +1,1928 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weekly Food Planner</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #fff5f5 0%, #fed7d7 100%);
+            min-height: 100vh;
+            padding: 10px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            color: #e53e3e;
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .week-nav {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            background: #e53e3e;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            background: #c53030;
+            transform: translateY(-2px);
+        }
+
+        .nav-btn.secondary {
+            background: #4a5568;
+        }
+
+        .nav-btn.secondary:hover {
+            background: #2d3748;
+        }
+
+        .nav-btn.success {
+            background: #38a169;
+        }
+
+        .nav-btn.success:hover {
+            background: #2f855a;
+        }
+
+        .nav-btn.warning {
+            background: #d69e2e;
+        }
+
+        .nav-btn.warning:hover {
+            background: #b7791f;
+        }
+
+        .week-info {
+            font-weight: bold;
+            color: #2d3748;
+            text-align: center;
+            margin: 0 10px;
+        }
+
+        .current-week-btn {
+            background: transparent;
+            color: #e53e3e;
+            border: 2px solid #e53e3e;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        .tabs {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .tab-nav {
+            display: flex;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .tab-btn {
+            flex: 1;
+            background: none;
+            border: none;
+            padding: 15px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .tab-btn.active {
+            background: #fed7d7;
+            color: #e53e3e;
+            border-bottom: 3px solid #e53e3e;
+        }
+
+        .tab-content {
+            padding: 20px;
+        }
+
+        .meal-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            font-size: 13px;
+        }
+
+        .meal-table th,
+        .meal-table td {
+            border: 1px solid #e2e8f0;
+            padding: 12px 8px;
+            text-align: left;
+            vertical-align: top;
+            position: relative;
+        }
+
+        .meal-table th {
+            background: #fed7d7;
+            font-weight: 600;
+            color: #2d3748;
+            text-align: center;
+        }
+
+        .meal-table th.meal-type {
+            background: #fff5f5;
+            color: #e53e3e;
+            width: 80px;
+        }
+
+        .day-header {
+            position: relative;
+        }
+
+        .day-actions {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            display: flex;
+            gap: 3px;
+        }
+
+        .day-action-btn {
+            background: #e53e3e;
+            color: white;
+            border: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .day-action-btn:hover {
+            background: #c53030;
+        }
+
+        .meal-cell {
+            min-height: 60px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            position: relative;
+        }
+
+        .meal-cell:hover {
+            background: #f7fafc;
+        }
+
+        .meal-cell.dragging {
+            opacity: 0.5;
+            background: #e2e8f0;
+        }
+
+        .meal-cell.drop-target {
+            background: #c6f6d5;
+            border: 2px dashed #38a169;
+        }
+
+        .meal-input {
+            width: 100%;
+            height: 60px;
+            border: 2px solid #e53e3e;
+            border-radius: 6px;
+            padding: 8px;
+            font-size: 12px;
+            resize: none;
+            font-family: inherit;
+        }
+
+        .meal-input:focus {
+            outline: none;
+            border-color: #c53030;
+        }
+
+        .meal-text {
+            min-height: 44px;
+            padding: 8px;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+        }
+
+        .placeholder {
+            color: #a0aec0;
+            font-style: italic;
+        }
+
+        .shopping-section {
+            margin-bottom: 30px;
+        }
+
+        .shopping-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .add-item {
+            background: #f7fafc;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .add-item h3 {
+            color: #2d3748;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .add-item-form {
+            display: flex;
+            gap: 10px;
+        }
+
+        .add-item input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .add-item input:focus {
+            outline: none;
+            border-color: #e53e3e;
+        }
+
+        .add-btn {
+            background: #e53e3e;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+
+        .shopping-list {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .shopping-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            transition: all 0.2s ease;
+            border: 1px solid #e2e8f0;
+            position: relative;
+        }
+
+        .shopping-item.completed {
+            background: #f0fff4;
+            border-color: #68d391;
+        }
+
+        .shopping-item.selected {
+            background: #ebf8ff;
+            border-color: #4299e1;
+        }
+
+        .shopping-item:hover {
+            border-color: #cbd5e0;
+        }
+
+        .shopping-checkbox {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid #68d391;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #68d391;
+            font-size: 12px;
+        }
+
+        .shopping-select {
+            width: 16px;
+            height: 16px;
+            border: 2px solid #4299e1;
+            border-radius: 3px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #4299e1;
+            font-size: 10px;
+        }
+
+        .shopping-text {
+            flex: 1;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .shopping-text.completed {
+            text-decoration: line-through;
+            color: #718096;
+        }
+
+        .shopping-text.editing {
+            background: white;
+            border: 1px solid #e53e3e;
+            border-radius: 4px;
+            padding: 4px 8px;
+            outline: none;
+        }
+
+        .shopping-actions {
+            display: flex;
+            gap: 5px;
+        }
+
+        .shopping-btn {
+            background: #fed7d7;
+            color: #e53e3e;
+            border: none;
+            padding: 4px 6px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 10px;
+        }
+
+        .delete-btn {
+            background: #fed7d7;
+            color: #e53e3e;
+            border: none;
+            padding: 6px 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #718096;
+        }
+
+        .summary {
+            background: #ebf8ff;
+            border: 1px solid #90cdf4;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            text-align: center;
+            color: #2b6cb0;
+            font-size: 14px;
+        }
+
+        .tips {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+
+        .tips h3 {
+            color: #2d3748;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tips-grid {
+            display: grid;
+            gap: 15px;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        }
+
+        .tip-card {
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 13px;
+        }
+
+        .tip-card.orange { background: #fed7d7; }
+        .tip-card.green { background: #c6f6d5; }
+        .tip-card.blue { background: #bee3f8; }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            animation: slideIn 0.3s ease;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .modal-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #2d3748;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #718096;
+            padding: 5px;
+            border-radius: 5px;
+        }
+
+        .close-btn:hover {
+            background: #f7fafc;
+        }
+
+        .week-selector {
+            margin-bottom: 20px;
+        }
+
+        .week-list {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+        }
+
+        .week-item {
+            padding: 15px;
+            border-bottom: 1px solid #e2e8f0;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .week-item:hover {
+            background: #f7fafc;
+        }
+
+        .week-item:last-child {
+            border-bottom: none;
+        }
+
+        .week-item.selected {
+            background: #fed7d7;
+            color: #e53e3e;
+            font-weight: bold;
+        }
+
+        .week-date {
+            font-weight: 500;
+        }
+
+        .week-meals-count {
+            font-size: 12px;
+            color: #718096;
+            background: #e2e8f0;
+            padding: 4px 8px;
+            border-radius: 12px;
+        }
+
+        .day-meals-container {
+            margin-top: 15px;
+        }
+
+        .day-meal-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            margin: 5px 0;
+            background: #f7fafc;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .day-meal-item:hover {
+            background: #e2e8f0;
+        }
+
+        .day-meal-item.selected {
+            background: #fed7d7;
+            color: #e53e3e;
+        }
+
+        .meal-info {
+            flex: 1;
+        }
+
+        .meal-type-label {
+            font-size: 12px;
+            color: #718096;
+            font-weight: bold;
+        }
+
+        .meal-content {
+            font-size: 14px;
+            margin-top: 2px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* Mobile optimizations */
+        @media (max-width: 768px) {
+            .meal-table {
+                font-size: 11px;
+            }
+            
+            .meal-table th,
+            .meal-table td {
+                padding: 8px 4px;
+            }
+            
+            .header h1 {
+                font-size: 1.4rem;
+            }
+            
+            .week-nav {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .nav-btn {
+                padding: 12px 16px;
+                font-size: 16px;
+            }
+
+            .tips-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                width: 95%;
+                padding: 20px;
+            }
+
+            .modal-actions {
+                flex-direction: column;
+            }
+
+            .week-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+
+            .day-action-btn {
+                width: 24px;
+                height: 24px;
+                font-size: 12px;
+            }
+
+            .shopping-controls {
+                flex-direction: column;
+            }
+        }
+
+        /* Very small screens */
+        @media (max-width: 480px) {
+            body { padding: 5px; }
+            
+            .meal-table {
+                font-size: 10px;
+            }
+            
+            .meal-table th,
+            .meal-table td {
+                padding: 6px 2px;
+            }
+            
+            .meal-input {
+                height: 50px;
+                font-size: 11px;
+            }
+        }
+    </style>
+    <!-- HTML2Canvas library for image export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🍽️ Weekly Food Planner</h1>
+            
+            <div class="week-nav">
+                <button class="nav-btn" onclick="goToPreviousWeek()">← Previous</button>
+                <div class="week-info">
+                    <div id="weekRange"></div>
+                    <button class="current-week-btn" onclick="goToCurrentWeek()">Go to current week</button>
+                </div>
+                <button class="nav-btn" onclick="goToNextWeek()">Next →</button>
+            </div>
+
+            <div class="action-buttons">
+                <button class="nav-btn success" onclick="openCopyModal()">📋 Copy from Previous</button>
+                <button class="nav-btn secondary" onclick="downloadAsImage()">📸 Download as Image</button>
+                <button class="nav-btn" onclick="generateShoppingList()">🛒 Generate Shopping List</button>
+                <button class="nav-btn warning" onclick="clearShoppingList()">🗑️ Clear Shopping List</button>
+                <button class="nav-btn" onclick="clearWeekPlan()">🗑️ Clear Week</button>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <div class="tab-nav">
+                <button class="tab-btn active" onclick="switchTab('planner')">
+                    📅 Meal Planner
+                </button>
+                <button class="tab-btn" onclick="switchTab('shopping')">
+                    🛒 Shopping List (<span id="shoppingCount">0</span>)
+                </button>
+            </div>
+
+            <div class="tab-content">
+                <!-- Meal Planner Tab -->
+                <div id="plannerTab">
+                    <div style="overflow-x: auto;">
+                        <table class="meal-table" id="mealTable">
+                            <thead>
+                                <tr>
+                                    <th class="meal-type">Day</th>
+                                    <th class="day-header">
+                                        Monday
+                                        <div class="day-actions">
+                                            <button class="day-action-btn" onclick="copyDay(0)" title="Copy Day">📋</button>
+                                            <button class="day-action-btn" onclick="clearDay(0)" title="Clear Day">🗑️</button>
+                                        </div>
+                                    </th>
+                                    <th class="day-header">
+                                        Tuesday
+                                        <div class="day-actions">
+                                            <button class="day-action-btn" onclick="copyDay(1)" title="Copy Day">📋</button>
+                                            <button class="day-action-btn" onclick="clearDay(1)" title="Clear Day">🗑️</button>
+                                        </div>
+                                    </th>
+                                    <th class="day-header">
+                                        Wednesday
+                                        <div class="day-actions">
+                                            <button class="day-action-btn" onclick="copyDay(2)" title="Copy Day">📋</button>
+                                            <button class="day-action-btn" onclick="clearDay(2)" title="Clear Day">🗑️</button>
+                                        </div>
+                                    </th>
+                                    <th class="day-header">
+                                        Thursday
+                                        <div class="day-actions">
+                                            <button class="day-action-btn" onclick="copyDay(3)" title="Copy Day">📋</button>
+                                            <button class="day-action-btn" onclick="clearDay(3)" title="Clear Day">🗑️</button>
+                                        </div>
+                                    </th>
+                                    <th class="day-header">
+                                        Friday
+                                        <div class="day-actions">
+                                            <button class="day-action-btn" onclick="copyDay(4)" title="Copy Day">📋</button>
+                                            <button class="day-action-btn" onclick="clearDay(4)" title="Clear Day">🗑️</button>
+                                        </div>
+                                    </th>
+                                    <th class="day-header">
+                                        Saturday
+                                        <div class="day-actions">
+                                            <button class="day-action-btn" onclick="copyDay(5)" title="Copy Day">📋</button>
+                                            <button class="day-action-btn" onclick="clearDay(5)" title="Clear Day">🗑️</button>
+                                        </div>
+                                    </th>
+                                    <th class="day-header">
+                                        Sunday
+                                        <div class="day-actions">
+                                            <button class="day-action-btn" onclick="copyDay(6)" title="Copy Day">📋</button>
+                                            <button class="day-action-btn" onclick="clearDay(6)" title="Clear Day">🗑️</button>
+                                        </div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody id="mealTableBody">
+                                <!-- Generated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Shopping List Tab -->
+                <div id="shoppingTab" style="display: none;">
+                    <div class="shopping-section">
+                        <div class="add-item">
+                            <h3>Add to Shopping List</h3>
+                            <div class="add-item-form">
+                                <input type="text" id="newIngredient" placeholder="Enter ingredient or item..." onkeypress="handleIngredientKeyPress(event)">
+                                <button class="add-btn" onclick="addToShoppingList()">+ Add</button>
+                            </div>
+                        </div>
+
+                        <div class="shopping-list">
+                            <div class="shopping-controls">
+                                <button class="nav-btn secondary" onclick="toggleSelectMode()">📌 Select Mode</button>
+                                <button class="nav-btn" onclick="deleteSelectedItems()" id="deleteSelectedBtn" style="display: none;">🗑️ Delete Selected</button>
+                                <button class="nav-btn success" onclick="markSelectedCompleted()" id="markSelectedBtn" style="display: none;">✅ Mark Completed</button>
+                            </div>
+                            
+                            <h3>Shopping List</h3>
+                            <div id="shoppingItems">
+                                <!-- Generated by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tips -->
+        <div class="tips">
+            <h3>🍳 Tips for Meal Planning</h3>
+            <div class="tips-grid">
+                <div class="tip-card orange">
+                    <strong>Smart Shopping:</strong> Click "Generate Shopping List" to extract ingredients from your meals automatically.
+                </div>
+                <div class="tip-card green">
+                    <strong>Copy & Paste:</strong> Use the 📋 buttons to copy entire days or individual meals between weeks.
+                </div>
+                <div class="tip-card blue">
+                    <strong>Drag & Drop:</strong> Drag meals between days to reschedule easily. Long press on mobile to start dragging.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Copy Modal -->
+    <div id="copyModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Copy from Previous Weeks</h2>
+                <button class="close-btn" onclick="closeCopyModal()">×</button>
+            </div>
+            
+            <div class="week-selector">
+                <p style="margin-bottom: 15px; color: #718096;">Select what to copy:</p>
+                <div class="week-list" id="previousWeeksList">
+                    <!-- Generated by JavaScript -->
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <button class="nav-btn" onclick="closeCopyModal()">Cancel</button>
+                <button class="nav-btn success" onclick="copySelectedItems()">📋 Copy Selected</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let currentWeek = new Date();
+        let meals = {};
+        let shoppingList = [];
+        let editingCell = null;
+        let selectedItemsToCopy = [];
+        let isSelectMode = false;
+        let selectedShoppingItems = new Set();
+        let draggedMeal = null;
+        let draggedFromDay = null;
+        let draggedFromMealType = null;
+
+        const weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+        const mealTypes = ['Breakfast', 'Lunch', 'Dinner'];
+
+        // Ingredient extraction patterns - improve intelligence
+        const ingredientPatterns = {
+            // Common dish patterns where ingredient comes first
+            'mutton biryani': ['mutton', 'rice', 'onions', 'yogurt'],
+            'chicken curry': ['chicken', 'onions', 'tomatoes', 'coconut'],
+            'fish fry': ['fish', 'oil', 'spices'],
+            'egg curry': ['eggs', 'onions', 'tomatoes'],
+            'dal rice': ['dal', 'rice'],
+            'curd rice': ['rice', 'curd'],
+            'sambar rice': ['rice', 'sambar', 'dal'],
+            'rasam rice': ['rice', 'tomatoes', 'tamarind'],
+            'lemon rice': ['rice', 'lemon'],
+            'coconut rice': ['rice', 'coconut'],
+            'vegetable biryani': ['rice', 'mixed vegetables', 'onions'],
+            'paneer curry': ['paneer', 'onions', 'tomatoes'],
+            'aloo gobi': ['potatoes', 'cauliflower'],
+            'palak paneer': ['spinach', 'paneer'],
+            'rajma chawal': ['rajma', 'rice'],
+            'chole bhature': ['chickpeas', 'flour'],
+            'masala dosa': ['rice', 'urad dal', 'potatoes'],
+            'idli sambar': ['rice', 'urad dal', 'dal'],
+            'upma': ['semolina', 'vegetables'],
+            'poha': ['flattened rice', 'onions', 'potatoes']
+        };
+
+        // Initialize app
+        function init() {
+            loadData();
+            updateWeekDisplay();
+            generateMealTable();
+            updateShoppingDisplay();
+            setupDragAndDrop();
+        }
+
+        // Local storage functions
+        function saveData() {
+            localStorage.setItem('foodPlannerMeals', JSON.stringify(meals));
+            localStorage.setItem('foodPlannerShopping', JSON.stringify(shoppingList));
+            localStorage.setItem('foodPlannerCurrentWeek', currentWeek.toISOString());
+        }
+
+        function loadData() {
+            const savedMeals = localStorage.getItem('foodPlannerMeals');
+            const savedShopping = localStorage.getItem('foodPlannerShopping');
+            const savedWeek = localStorage.getItem('foodPlannerCurrentWeek');
+
+            if (savedMeals) {
+                meals = JSON.parse(savedMeals);
+            }
+            if (savedShopping) {
+                shoppingList = JSON.parse(savedShopping);
+            }
+            if (savedWeek) {
+                currentWeek = new Date(savedWeek);
+            }
+
+            // Add sample data if empty
+            if (Object.keys(meals).length === 0) {
+                addSampleData();
+            }
+        }
+
+        function addSampleData() {
+            const weekDates = getWeekDates(currentWeek);
+            const sampleMeals = {
+                [`${weekDays[0]}-${weekDates[0].getDate()}-${weekDates[0].getMonth()}-${weekDates[0].getFullYear()}`]: {
+                    Breakfast: 'Idiyappam + coconut milk',
+                    Lunch: 'Garlic Rice and Egg roast',
+                    Dinner: 'Sandwich'
+                },
+                [`${weekDays[1]}-${weekDates[1].getDate()}-${weekDates[1].getMonth()}-${weekDates[1].getFullYear()}`]: {
+                    Breakfast: 'Bread Omelette',
+                    Lunch: 'Manathakkali Kootu + Rice + Sambhar',
+                    Dinner: 'Pasta'
+                },
+                [`${weekDays[2]}-${weekDates[2].getDate()}-${weekDates[2].getMonth()}-${weekDates[2].getFullYear()}`]: {
+                    Breakfast: 'Idli + Mutton Curry',
+                    Lunch: 'Mutton Biryani',
+                    Dinner: 'Noodles'
+                },
+                [`${weekDays[3]}-${weekDates[3].getDate()}-${weekDates[3].getMonth()}-${weekDates[3].getFullYear()}`]: {
+                    Breakfast: 'Pongal with ghee and chutney',
+                    Lunch: 'Puli Kulambu Sundaika + Kootu or carrot poriyal',
+                    Dinner: 'Chappathi + Egg'
+                },
+                [`${weekDays[4]}-${weekDates[4].getDate()}-${weekDates[4].getMonth()}-${weekDates[4].getFullYear()}`]: {
+                    Breakfast: 'Roti + mushroom or sabzi',
+                    Lunch: 'Pappu + Rice + Pappad',
+                    Dinner: '-'
+                }
+            };
+            meals = { ...meals, ...sampleMeals };
+            saveData();
+        }
+
+        // Week navigation functions
+        function getWeekDates(date) {
+            const week = [];
+            const startDate = new Date(date);
+            const day = startDate.getDay();
+            const diff = startDate.getDate() - day + (day === 0 ? -6 : 1);
+            startDate.setDate(diff);
+            
+            for (let i = 0; i < 7; i++) {
+                const currentDate = new Date(startDate);
+                currentDate.setDate(startDate.getDate() + i);
+                week.push(currentDate);
+            }
+            return week;
+        }
+
+        function getDateKey(date, dayIndex) {
+            return `${weekDays[dayIndex]}-${date.getDate()}-${date.getMonth()}-${date.getFullYear()}`;
+        }
+
+        function updateWeekDisplay() {
+            const weekDates = getWeekDates(currentWeek);
+            const start = weekDates[0];
+            const end = weekDates[6];
+            const range = `${start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${end.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`;
+            document.getElementById('weekRange').textContent = range;
+        }
+
+        function goToPreviousWeek() {
+            currentWeek.setDate(currentWeek.getDate() - 7);
+            updateWeekDisplay();
+            generateMealTable();
+            saveData();
+        }
+
+        function goToNextWeek() {
+            currentWeek.setDate(currentWeek.getDate() + 7);
+            updateWeekDisplay();
+            generateMealTable();
+            saveData();
+        }
+
+        function goToCurrentWeek() {
+            currentWeek = new Date();
+            updateWeekDisplay();
+            generateMealTable();
+            saveData();
+        }
+
+        // Meal table functions
+        function generateMealTable() {
+            const weekDates = getWeekDates(currentWeek);
+            const tbody = document.getElementById('mealTableBody');
+            tbody.innerHTML = '';
+
+            // Update header with dates
+            const headers = document.querySelectorAll('#mealTable th');
+            weekDays.forEach((day, index) => {
+                if (headers[index + 1]) {
+                    const dayHeader = headers[index + 1].querySelector('.day-header') ? headers[index + 1] : headers[index + 1];
+                    if (dayHeader) {
+                        dayHeader.innerHTML = `
+                            ${day}
+                            <div style="font-size: 12px; color: #718096; font-weight: normal;">
+                                ${weekDates[index].toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                            </div>
+                            <div class="day-actions">
+                                <button class="day-action-btn" onclick="copyDay(${index})" title="Copy Day">📋</button>
+                                <button class="day-action-btn" onclick="clearDay(${index})" title="Clear Day">🗑️</button>
+                            </div>
+                        `;
+                    }
+                }
+            });
+
+            // Initialize meals for current week
+            weekDates.forEach((date, index) => {
+                const dateKey = getDateKey(date, index);
+                if (!meals[dateKey]) {
+                    meals[dateKey] = {
+                        Breakfast: '',
+                        Lunch: '',
+                        Dinner: ''
+                    };
+                }
+            });
+
+            // Generate rows
+            mealTypes.forEach(mealType => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="meal-type" style="background: #fff5f5; color: #e53e3e; font-weight: 600;">
+                        ${mealType}
+                    </td>
+                `;
+
+                weekDays.forEach((day, index) => {
+                    const dateKey = getDateKey(weekDates[index], index);
+                    const mealValue = meals[dateKey]?.[mealType] || '';
+
+                    const cell = document.createElement('td');
+                    cell.className = 'meal-cell';
+                    cell.draggable = true;
+                    cell.dataset.day = index;
+                    cell.dataset.mealType = mealType;
+                    cell.onclick = () => handleCellClick(dateKey, mealType, cell);
+                    
+                    cell.innerHTML = `
+                        <div class="meal-text" style="min-height: 44px; padding: 8px; word-wrap: break-word; white-space: pre-wrap;">
+                            ${mealValue || '<span class="placeholder">Click to add meal</span>'}
+                        </div>
+                    `;
+
+                    row.appendChild(cell);
+                });
+
+                tbody.appendChild(row);
+            });
+        }
+
+        function handleCellClick(dateKey, mealType, cell) {
+            if (editingCell) return;
+
+            editingCell = { dateKey, mealType, cell };
+            const currentValue = meals[dateKey]?.[mealType] || '';
+            
+            cell.innerHTML = `
+                <textarea class="meal-input" 
+                    onblur="saveMeal()"
+                    onkeydown="handleKeyDown(event)"
+                    placeholder="Add meal..."
+                >${currentValue}</textarea>
+            `;
+            
+            const textarea = cell.querySelector('textarea');
+            textarea.focus();
+            textarea.select();
+        }
+
+        function saveMeal() {
+            if (!editingCell) return;
+
+            const { dateKey, mealType, cell } = editingCell;
+            const textarea = cell.querySelector('textarea');
+            const value = textarea.value.trim();
+
+            if (!meals[dateKey]) {
+                meals[dateKey] = {};
+            }
+            meals[dateKey][mealType] = value;
+
+            cell.innerHTML = `
+                <div class="meal-text" style="min-height: 44px; padding: 8px; word-wrap: break-word; white-space: pre-wrap;">
+                    ${value || '<span class="placeholder">Click to add meal</span>'}
+                </div>
+            `;
+
+            editingCell = null;
+            saveData();
+        }
+
+        function handleKeyDown(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                saveMeal();
+            } else if (event.key === 'Escape') {
+                cancelEdit();
+            }
+        }
+
+        function cancelEdit() {
+            if (!editingCell) return;
+
+            const { dateKey, mealType, cell } = editingCell;
+            const currentValue = meals[dateKey]?.[mealType] || '';
+
+            cell.innerHTML = `
+                <div class="meal-text" style="min-height: 44px; padding: 8px; word-wrap: break-word; white-space: pre-wrap;">
+                    ${currentValue || '<span class="placeholder">Click to add meal</span>'}
+                </div>
+            `;
+
+            editingCell = null;
+        }
+
+        // Drag and Drop functionality
+        function setupDragAndDrop() {
+            document.addEventListener('dragstart', handleDragStart);
+            document.addEventListener('dragover', handleDragOver);
+            document.addEventListener('drop', handleDrop);
+            document.addEventListener('dragend', handleDragEnd);
+        }
+
+        function handleDragStart(e) {
+            if (!e.target.classList.contains('meal-cell')) return;
+            
+            const dayIndex = e.target.dataset.day;
+            const mealType = e.target.dataset.mealType;
+            const weekDates = getWeekDates(currentWeek);
+            const dateKey = getDateKey(weekDates[dayIndex], parseInt(dayIndex));
+            
+            draggedMeal = meals[dateKey]?.[mealType] || '';
+            draggedFromDay = dayIndex;
+            draggedFromMealType = mealType;
+            
+            e.target.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+        }
+
+        function handleDragOver(e) {
+            if (!e.target.classList.contains('meal-cell')) return;
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            e.target.classList.add('drop-target');
+        }
+
+        function handleDrop(e) {
+            if (!e.target.classList.contains('meal-cell')) return;
+            e.preventDefault();
+            
+            const targetDay = e.target.dataset.day;
+            const targetMealType = e.target.dataset.mealType;
+            const weekDates = getWeekDates(currentWeek);
+            
+            if (draggedMeal && draggedFromDay !== null) {
+                // Clear source
+                const sourceKey = getDateKey(weekDates[draggedFromDay], parseInt(draggedFromDay));
+                if (meals[sourceKey]) {
+                    meals[sourceKey][draggedFromMealType] = '';
+                }
+                
+                // Set target
+                const targetKey = getDateKey(weekDates[targetDay], parseInt(targetDay));
+                if (!meals[targetKey]) {
+                    meals[targetKey] = {};
+                }
+                meals[targetKey][targetMealType] = draggedMeal;
+                
+                saveData();
+                generateMealTable();
+            }
+            
+            e.target.classList.remove('drop-target');
+        }
+
+        function handleDragEnd(e) {
+            if (e.target.classList.contains('meal-cell')) {
+                e.target.classList.remove('dragging');
+            }
+            document.querySelectorAll('.meal-cell').forEach(cell => {
+                cell.classList.remove('drop-target');
+            });
+            
+            draggedMeal = null;
+            draggedFromDay = null;
+            draggedFromMealType = null;
+        }
+
+        // Day operations
+        function copyDay(dayIndex) {
+            const weekDates = getWeekDates(currentWeek);
+            const dateKey = getDateKey(weekDates[dayIndex], dayIndex);
+            const dayMeals = meals[dateKey];
+            
+            if (!dayMeals || Object.values(dayMeals).every(meal => !meal || meal.trim() === '')) {
+                alert('No meals found for this day to copy!');
+                return;
+            }
+            
+            // Store in clipboard-like storage
+            localStorage.setItem('copiedDay', JSON.stringify(dayMeals));
+            localStorage.setItem('copiedDayName', weekDays[dayIndex]);
+            
+            alert(`📋 Copied ${weekDays[dayIndex]}'s meals! Click on any day header's paste button to paste.`);
+            
+            // Add paste buttons to all day headers
+            setTimeout(() => {
+                document.querySelectorAll('.day-actions').forEach((actions, index) => {
+                    if (!actions.querySelector('.paste-btn')) {
+                        const pasteBtn = document.createElement('button');
+                        pasteBtn.className = 'day-action-btn paste-btn';
+                        pasteBtn.innerHTML = '📂';
+                        pasteBtn.title = 'Paste Day';
+                        pasteBtn.onclick = () => pasteDay(index);
+                        actions.appendChild(pasteBtn);
+                    }
+                });
+            }, 100);
+        }
+
+        function pasteDay(dayIndex) {
+            const copiedDay = localStorage.getItem('copiedDay');
+            if (!copiedDay) {
+                alert('No day copied! Copy a day first.');
+                return;
+            }
+            
+            const copiedMeals = JSON.parse(copiedDay);
+            const copiedDayName = localStorage.getItem('copiedDayName');
+            const weekDates = getWeekDates(currentWeek);
+            const targetKey = getDateKey(weekDates[dayIndex], dayIndex);
+            
+            if (!meals[targetKey]) {
+                meals[targetKey] = {};
+            }
+            
+            meals[targetKey] = { ...copiedMeals };
+            saveData();
+            generateMealTable();
+            
+            alert(`📂 Pasted ${copiedDayName}'s meals to ${weekDays[dayIndex]}!`);
+        }
+
+        function clearDay(dayIndex) {
+            if (confirm(`Clear all meals for ${weekDays[dayIndex]}?`)) {
+                const weekDates = getWeekDates(currentWeek);
+                const dateKey = getDateKey(weekDates[dayIndex], dayIndex);
+                
+                meals[dateKey] = {
+                    Breakfast: '',
+                    Lunch: '',
+                    Dinner: ''
+                };
+                
+                saveData();
+                generateMealTable();
+            }
+        }
+
+        // Enhanced copy modal for individual meals and weeks
+        function openCopyModal() {
+            generateCopyOptions();
+            document.getElementById('copyModal').classList.add('show');
+        }
+
+        function closeCopyModal() {
+            document.getElementById('copyModal').classList.remove('show');
+            selectedItemsToCopy = [];
+        }
+
+        function generateCopyOptions() {
+            const container = document.getElementById('previousWeeksList');
+            container.innerHTML = '';
+
+            const weeksWithData = [];
+            const currentWeekDates = getWeekDates(currentWeek);
+            const currentWeekStart = currentWeekDates[0];
+
+            // Look back up to 12 weeks
+            for (let weeksBack = 1; weeksBack <= 12; weeksBack++) {
+                const weekDate = new Date(currentWeekStart);
+                weekDate.setDate(weekDate.getDate() - (weeksBack * 7));
+                const weekDates = getWeekDates(weekDate);
+
+                let weekMeals = [];
+                weekDates.forEach((date, index) => {
+                    const dateKey = getDateKey(date, index);
+                    if (meals[dateKey]) {
+                        mealTypes.forEach(mealType => {
+                            if (meals[dateKey][mealType] && meals[dateKey][mealType].trim() !== '' && meals[dateKey][mealType] !== '-') {
+                                weekMeals.push({
+                                    day: weekDays[index],
+                                    mealType,
+                                    content: meals[dateKey][mealType],
+                                    dateKey,
+                                    dayIndex: index
+                                });
+                            }
+                        });
+                    }
+                });
+
+                if (weekMeals.length > 0) {
+                    weeksWithData.push({
+                        date: weekDate,
+                        weekDates: weekDates,
+                        meals: weekMeals
+                    });
+                }
+            }
+
+            if (weeksWithData.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state" style="padding: 30px; text-align: center;">
+                        <div style="font-size: 2rem; margin-bottom: 10px;">📅</div>
+                        <p>No previous weeks with meal data found</p>
+                        <p style="font-size: 12px; color: #a0aec0;">Plan some meals first, then you can copy them to future weeks</p>
+                    </div>
+                `;
+                return;
+            }
+
+            weeksWithData.forEach(week => {
+                const weekItem = document.createElement('div');
+                weekItem.className = 'week-item';
+
+                const start = week.weekDates[0];
+                const end = week.weekDates[6];
+                const weekRange = `${start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${end.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`;
+
+                weekItem.innerHTML = `
+                    <div>
+                        <div class="week-date">${weekRange}</div>
+                        <div style="font-size: 12px; color: #718096; margin-top: 2px;">
+                            ${getWeekAgo(week.date)} ago • ${week.meals.length} meals
+                        </div>
+                    </div>
+                `;
+
+                // Add individual meals
+                const mealsContainer = document.createElement('div');
+                mealsContainer.className = 'day-meals-container';
+                
+                week.meals.forEach(meal => {
+                    const mealItem = document.createElement('div');
+                    mealItem.className = 'day-meal-item';
+                    mealItem.onclick = () => toggleMealSelection(meal, mealItem);
+                    
+                    mealItem.innerHTML = `
+                        <div class="meal-info">
+                            <div class="meal-type-label">${meal.day} - ${meal.mealType}</div>
+                            <div class="meal-content">${meal.content}</div>
+                        </div>
+                    `;
+                    
+                    mealsContainer.appendChild(mealItem);
+                });
+
+                weekItem.appendChild(mealsContainer);
+                container.appendChild(weekItem);
+            });
+        }
+
+        function toggleMealSelection(meal, element) {
+            const index = selectedItemsToCopy.findIndex(item => 
+                item.dateKey === meal.dateKey && item.mealType === meal.mealType
+            );
+            
+            if (index > -1) {
+                selectedItemsToCopy.splice(index, 1);
+                element.classList.remove('selected');
+            } else {
+                selectedItemsToCopy.push(meal);
+                element.classList.add('selected');
+            }
+        }
+
+        function copySelectedItems() {
+            if (selectedItemsToCopy.length === 0) {
+                alert('Please select meals to copy');
+                return;
+            }
+
+            const currentWeekDates = getWeekDates(currentWeek);
+            let copiedCount = 0;
+
+            selectedItemsToCopy.forEach(meal => {
+                // Find corresponding day in current week
+                const targetDate = currentWeekDates[meal.dayIndex];
+                const targetKey = getDateKey(targetDate, meal.dayIndex);
+                
+                if (!meals[targetKey]) {
+                    meals[targetKey] = {};
+                }
+                
+                meals[targetKey][meal.mealType] = meal.content;
+                copiedCount++;
+            });
+
+            generateMealTable();
+            saveData();
+            closeCopyModal();
+
+            alert(`Successfully copied ${copiedCount} meals to the current week!`);
+        }
+
+        function getWeekAgo(date) {
+            const now = new Date();
+            const diffTime = Math.abs(now - date);
+            const diffWeeks = Math.ceil(diffTime / (1000 * 60 * 60 * 24 * 7));
+            return diffWeeks === 1 ? '1 week' : `${diffWeeks} weeks`;
+        }
+
+        // Enhanced shopping list functions
+        function extractIngredientsFromMeal(mealText) {
+            if (!mealText || mealText.trim() === '' || mealText === '-') return [];
+            
+            const meal = mealText.toLowerCase().trim();
+            const ingredients = [];
+            
+            // Check for known dish patterns
+            for (const [dish, dishIngredients] of Object.entries(ingredientPatterns)) {
+                if (meal.includes(dish)) {
+                    ingredients.push(...dishIngredients);
+                }
+            }
+            
+            // Extract individual ingredients from text
+            const parts = meal.split(/[+,&\s]+/).map(part => part.trim()).filter(part => part.length > 2);
+            
+            parts.forEach(part => {
+                // Skip common non-ingredient words
+                const skipWords = ['with', 'and', 'or', 'the', 'a', 'an', 'in', 'on', 'at', 'to', 'for', 'of', 'by'];
+                if (!skipWords.includes(part) && !ingredients.includes(part)) {
+                    
+                    // Extract base ingredients from common preparations
+                    if (part.includes('curry')) {
+                        const base = part.replace('curry', '').trim();
+                        if (base) ingredients.push(base);
+                    } else if (part.includes('fry')) {
+                        const base = part.replace('fry', '').trim();
+                        if (base) ingredients.push(base);
+                    } else if (part.includes('roast')) {
+                        const base = part.replace('roast', '').trim();
+                        if (base) ingredients.push(base);
+                    } else {
+                        ingredients.push(part);
+                    }
+                }
+            });
+            
+            return [...new Set(ingredients)]; // Remove duplicates
+        }
+
+        function generateShoppingList() {
+            const weekDates = getWeekDates(currentWeek);
+            const allIngredients = [];
+            
+            weekDates.forEach((date, index) => {
+                const dateKey = getDateKey(date, index);
+                if (meals[dateKey]) {
+                    mealTypes.forEach(mealType => {
+                        const meal = meals[dateKey][mealType];
+                        if (meal) {
+                            const ingredients = extractIngredientsFromMeal(meal);
+                            allIngredients.push(...ingredients);
+                        }
+                    });
+                }
+            });
+            
+            const uniqueIngredients = [...new Set(allIngredients)];
+            let addedCount = 0;
+            
+            uniqueIngredients.forEach(ingredient => {
+                if (!shoppingList.find(item => item.name.toLowerCase() === ingredient.toLowerCase())) {
+                    shoppingList.push({
+                        id: Date.now() + Math.random(),
+                        name: ingredient.charAt(0).toUpperCase() + ingredient.slice(1),
+                        completed: false,
+                        weekGenerated: getWeekKey(currentWeek)
+                    });
+                    addedCount++;
+                }
+            });
+            
+            updateShoppingDisplay();
+            saveData();
+            
+            if (addedCount > 0) {
+                alert(`✅ Added ${addedCount} ingredients to shopping list!`);
+                switchTab('shopping');
+            } else {
+                alert('ℹ️ No new ingredients found to add.');
+            }
+        }
+
+        function getWeekKey(date) {
+            const weekDates = getWeekDates(date);
+            return `${weekDates[0].getFullYear()}-W${Math.ceil(weekDates[0].getDate() / 7)}`;
+        }
+
+        function clearShoppingList() {
+            if (confirm('Clear all items from shopping list?')) {
+                shoppingList = [];
+                updateShoppingDisplay();
+                saveData();
+            }
+        }
+
+        function addToShoppingList() {
+            const input = document.getElementById('newIngredient');
+            const ingredient = input.value.trim();
+            
+            if (ingredient && !shoppingList.find(item => item.name.toLowerCase() === ingredient.toLowerCase())) {
+                shoppingList.push({
+                    id: Date.now(),
+                    name: ingredient,
+                    completed: false,
+                    weekGenerated: null
+                });
+                input.value = '';
+                updateShoppingDisplay();
+                saveData();
+            }
+        }
+
+        function handleIngredientKeyPress(event) {
+            if (event.key === 'Enter') {
+                addToShoppingList();
+            }
+        }
+
+        function toggleShoppingItem(id) {
+            const item = shoppingList.find(item => item.id === id);
+            if (item) {
+                item.completed = !item.completed;
+                updateShoppingDisplay();
+                saveData();
+            }
+        }
+
+        function editShoppingItem(id) {
+            const item = shoppingList.find(item => item.id === id);
+            const element = document.querySelector(`[data-item-id="${id}"] .shopping-text`);
+            
+            if (item && element) {
+                const currentText = item.name;
+                element.innerHTML = `<input type="text" class="shopping-text editing" value="${currentText}" onblur="saveShoppingEdit(${id})" onkeydown="handleShoppingEditKeyDown(event, ${id})">`;
+                element.querySelector('input').focus();
+            }
+        }
+
+        function saveShoppingEdit(id) {
+            const item = shoppingList.find(item => item.id === id);
+            const input = document.querySelector(`[data-item-id="${id}"] .shopping-text input`);
+            
+            if (item && input) {
+                const newValue = input.value.trim();
+                if (newValue) {
+                    item.name = newValue;
+                    saveData();
+                }
+                updateShoppingDisplay();
+            }
+        }
+
+        function handleShoppingEditKeyDown(event, id) {
+            if (event.key === 'Enter') {
+                saveShoppingEdit(id);
+            } else if (event.key === 'Escape') {
+                updateShoppingDisplay();
+            }
+        }
+
+        function removeShoppingItem(id) {
+            shoppingList = shoppingList.filter(item => item.id !== id);
+            selectedShoppingItems.delete(id);
+            updateShoppingDisplay();
+            saveData();
+        }
+
+        function toggleSelectMode() {
+            isSelectMode = !isSelectMode;
+            selectedShoppingItems.clear();
+            updateShoppingDisplay();
+            
+            const btn = document.querySelector('[onclick="toggleSelectMode()"]');
+            btn.textContent = isSelectMode ? '❌ Exit Select' : '📌 Select Mode';
+            
+            document.getElementById('deleteSelectedBtn').style.display = isSelectMode ? 'inline-block' : 'none';
+            document.getElementById('markSelectedBtn').style.display = isSelectMode ? 'inline-block' : 'none';
+        }
+
+        function toggleItemSelection(id) {
+            if (selectedShoppingItems.has(id)) {
+                selectedShoppingItems.delete(id);
+            } else {
+                selectedShoppingItems.add(id);
+            }
+            updateShoppingDisplay();
+        }
+
+        function deleteSelectedItems() {
+            if (selectedShoppingItems.size === 0) {
+                alert('No items selected');
+                return;
+            }
+            
+            if (confirm(`Delete ${selectedShoppingItems.size} selected items?`)) {
+                shoppingList = shoppingList.filter(item => !selectedShoppingItems.has(item.id));
+                selectedShoppingItems.clear();
+                updateShoppingDisplay();
+                saveData();
+            }
+        }
+
+        function markSelectedCompleted() {
+            if (selectedShoppingItems.size === 0) {
+                alert('No items selected');
+                return;
+            }
+            
+            shoppingList.forEach(item => {
+                if (selectedShoppingItems.has(item.id)) {
+                    item.completed = true;
+                }
+            });
+            
+            selectedShoppingItems.clear();
+            updateShoppingDisplay();
+            saveData();
+        }
+
+        function updateShoppingDisplay() {
+            const container = document.getElementById('shoppingItems');
+            const countElement = document.getElementById('shoppingCount');
+            
+            countElement.textContent = shoppingList.length;
+
+            if (shoppingList.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div style="font-size: 3rem; margin-bottom: 15px;">🛒</div>
+                        <p>Your shopping list is empty</p>
+                        <p style="font-size: 12px; color: #a0aec0;">Add items manually or generate from your meal plan</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = shoppingList.map(item => `
+                <div class="shopping-item ${item.completed ? 'completed' : ''} ${selectedShoppingItems.has(item.id) ? 'selected' : ''}" data-item-id="${item.id}">
+                    ${isSelectMode ? `
+                        <div class="shopping-select" onclick="toggleItemSelection(${item.id})">
+                            ${selectedShoppingItems.has(item.id) ? '✓' : ''}
+                        </div>
+                    ` : ''}
+                    <div class="shopping-checkbox" onclick="toggleShoppingItem(${item.id})">
+                        ${item.completed ? '✓' : ''}
+                    </div>
+                    <div class="shopping-text ${item.completed ? 'completed' : ''}" onclick="editShoppingItem(${item.id})">
+                        ${item.name}
+                    </div>
+                    <div class="shopping-actions">
+                        <button class="shopping-btn" onclick="editShoppingItem(${item.id})" title="Edit">✏️</button>
+                        <button class="shopping-btn" onclick="removeShoppingItem(${item.id})" title="Delete">🗑️</button>
+                    </div>
+                </div>
+            `).join('');
+
+            const completed = shoppingList.filter(item => item.completed).length;
+            const selected = selectedShoppingItems.size;
+            
+            let summaryText = `${completed} of ${shoppingList.length} items completed`;
+            if (isSelectMode && selected > 0) {
+                summaryText += ` • ${selected} selected`;
+            }
+            
+            container.innerHTML += `
+                <div class="summary">
+                    <strong>${summaryText}</strong>
+                </div>
+            `;
+        }
+
+        // Download as image function
+        async function downloadAsImage() {
+            try {
+                const btn = event.target;
+                const originalText = btn.textContent;
+                btn.textContent = '📸 Generating...';
+                btn.disabled = true;
+
+                // Create export container
+                const exportContainer = document.createElement('div');
+                exportContainer.style.cssText = `
+                    background: white;
+                    padding: 30px;
+                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                    width: 1000px;
+                    margin: 0 auto;
+                `;
+
+                // Add header
+                const weekRange = document.getElementById('weekRange').textContent;
+                const header = document.createElement('div');
+                header.style.cssText = `
+                    text-align: center;
+                    margin-bottom: 30px;
+                    border-bottom: 3px solid #e53e3e;
+                    padding-bottom: 20px;
+                `;
+                header.innerHTML = `
+                    <h1 style="color: #e53e3e; font-size: 28px; margin: 0 0 10px 0;">
+                        🍽️ Weekly Food Planner
+                    </h1>
+                    <p style="font-size: 18px; color: #2d3748; font-weight: bold; margin: 0;">
+                        ${weekRange}
+                    </p>
+                `;
+
+                // Clone and style table
+                const tableElement = document.getElementById('mealTable');
+                const tableClone = tableElement.cloneNode(true);
+                tableClone.style.cssText = `
+                    width: 100%;
+                    border-collapse: collapse;
+                    margin: 0;
+                    font-size: 14px;
+                    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+                    border-radius: 10px;
+                    overflow: hidden;
+                `;
+
+                // Clean up table for export
+                tableClone.querySelectorAll('.day-actions').forEach(el => el.remove());
+                
+                // Style cells
+                const cells = tableClone.querySelectorAll('th, td');
+                cells.forEach(cell => {
+                    cell.style.cssText = `
+                        border: 2px solid #e2e8f0;
+                        padding: 15px 10px;
+                        text-align: left;
+                        vertical-align: top;
+                        background: ${cell.tagName === 'TH' ? '#fed7d7' : 'white'};
+                        color: ${cell.classList.contains('meal-type') ? '#e53e3e' : '#2d3748'};
+                        font-weight: ${cell.tagName === 'TH' ? 'bold' : 'normal'};
+                        font-size: 13px;
+                        line-height: 1.4;
+                    `;
+
+                    // Clean content
+                    const mealText = cell.querySelector('.meal-text');
+                    if (mealText) {
+                        const placeholder = mealText.querySelector('.placeholder');
+                        if (placeholder) {
+                            mealText.textContent = '';
+                        }
+                    }
+                });
+
+                // Add footer
+                const footer = document.createElement('div');
+                footer.style.cssText = `
+                    text-align: center;
+                    margin-top: 30px;
+                    padding-top: 20px;
+                    border-top: 1px solid #e2e8f0;
+                    color: #718096;
+                    font-size: 12px;
+                `;
+                footer.innerHTML = `
+                    Generated on ${new Date().toLocaleDateString('en-US', { 
+                        year: 'numeric', 
+                        month: 'long', 
+                        day: 'numeric' 
+                    })} • Weekly Food Planner App
+                `;
+
+                // Assemble container
+                exportContainer.appendChild(header);
+                exportContainer.appendChild(tableClone);
+                exportContainer.appendChild(footer);
+
+                // Add to DOM temporarily
+                exportContainer.style.position = 'absolute';
+                exportContainer.style.left = '-10000px';
+                exportContainer.style.top = '0';
+                document.body.appendChild(exportContainer);
+
+                // Generate image
+                const canvas = await html2canvas(exportContainer, {
+                    backgroundColor: '#ffffff',
+                    scale: 2,
+                    useCORS: true,
+                    allowTaint: true,
+                    width: 1000,
+                    height: exportContainer.scrollHeight
+                });
+
+                // Cleanup
+                document.body.removeChild(exportContainer);
+
+                // Download
+                const link = document.createElement('a');
+                const weekRangeClean = weekRange.replace(/[^a-zA-Z0-9-]/g, '_');
+                link.download = `meal-plan-${weekRangeClean}.png`;
+                link.href = canvas.toDataURL('image/png');
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+
+                alert('✅ Meal plan downloaded as image successfully!');
+
+            } catch (error) {
+                console.error('Error generating image:', error);
+                alert('❌ Sorry, there was an error generating the image. Please try again.');
+            } finally {
+                event.target.textContent = originalText;
+                event.target.disabled = false;
+            }
+        }
+
+        function clearWeekPlan() {
+            if (confirm('Are you sure you want to clear all meals for this week?')) {
+                const weekDates = getWeekDates(currentWeek);
+                weekDates.forEach((date, index) => {
+                    const dateKey = getDateKey(date, index);
+                    meals[dateKey] = {
+                        Breakfast: '',
+                        Lunch: '',
+                        Dinner: ''
+                    };
+                });
+                generateMealTable();
+                saveData();
+            }
+        }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById('plannerTab').style.display = tab === 'planner' ? 'block' : 'none';
+            document.getElementById('shoppingTab').style.display = tab === 'shopping' ? 'block' : 'none';
+        }
+
+        // Close modal when clicking outside
+        document.addEventListener('click', function(event) {
+            const modal = document.getElementById('copyModal');
+            if (event.target === modal) {
+                closeCopyModal();
+            }
+        });
+
+        // Initialize app when page loads
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
