@@ -1,14 +1,17 @@
-// Firebase configuration - REPLACE with your actual config from Firebase Console
+// Firebase configuration for your Weekly Meal Planner
+// Using Firebase v9 compat mode for compatibility with your app
+
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY_HERE",
-  authDomain: "your-project-id.firebaseapp.com",
-  projectId: "your-project-id",
-  storageBucket: "your-project-id.appspot.com",
-  messagingSenderId: "123456789",
-  appId: "1:123456789:web:abcdef123456"
+  apiKey: "AIzaSyDicuf9DBTnEvoXK7WxCnOf8nb_u8hazcQ",
+  authDomain: "meals-planner-weekly.firebaseapp.com",
+  projectId: "meals-planner-weekly",
+  storageBucket: "meals-planner-weekly.firebasestorage.app",
+  messagingSenderId: "303592781889",
+  appId: "1:303592781889:web:e52068c3bde39e90c5aec0",
+  measurementId: "G-S0SVP7KLKZ"
 };
 
-// Initialize Firebase
+// Initialize Firebase using compat mode (works with your current HTML)
 firebase.initializeApp(firebaseConfig);
 
 // Initialize services
@@ -25,4 +28,11 @@ db.enablePersistence()
     }
   });
 
-console.log('🔥 Firebase initialized successfully!');
+// Optional: Enable Analytics
+if (typeof firebase.analytics !== 'undefined') {
+  const analytics = firebase.analytics();
+}
+
+console.log('🔥 Firebase initialized successfully for family meal planning!');
+console.log('📧 Project: meals-planner-weekly');
+console.log('👨‍👩‍👧‍👦 Ready for family collaboration!');
