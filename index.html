@@ -1,114 +1,186 @@
-getSeasonalSuggestions() {
-                const month = new Date().getMonth();
-                const seasonalMeals = {
-                    winter: ['Hot Soup', 'Gajar Halwa', 'Sarson ka Saag', 'Warm Khichdi'],
-                    summer: ['Buttermilk', 'Cucumber Salad', 'Mango Lassi', 'Cold Curd Rice'],
-                    monsoon: ['Pakoras', 'Hot Tea with Snacks', 'Corn Bhel', 'Ginger Tea'],
-                    other: ['Seasonal Fruits', 'Fresh Vegetables', 'Local Specialties', 'Regional Dishes']
-                };
+<div class="tab-nav">
+                <button class="tab-btn active" onclick="switchTab('planner')">
+                    📅 Meal Planner
+                </button>
+                <button class="tab-btn" onclick="switchTab('shopping')">
+                    🛒 Shopping List (<span id="shoppingCount">0</span>)
+                </button>
+            </div>
 
-                let season = 'other';
-                if (month >= 11 || month <= 1) season = 'winter';
-                else if (month >= 3 && month <= 5) season = 'summer';
-                else if (month >= 6 && month <= 9) season = 'monsoon';
+            <div class="tab-content">
+                <!-- Meal Planner Tab -->
+                <div id="plannerTab">
+                    <div style="overflow-x: auto;">
+                        <table class="meal-table" id="mealTable">
+                            <thead>
+                                <tr>
+                                    <th class="meal-type">Day</th>
+                                    <th class="day-header" id="day-header-0">
+                                        <div class="day-actions">
+                                            <button class="day-action-btn" onclick="copyDay(0)" title="Copy Day">📋</button>
+                                            <button class="day-action-btn" onclick="clearDay(0)" title="Clear Day">🗑️</button>
+                                        </div>
+                                        <div class="day-content">
+                                            <div style="color: #e53e3e; font-weight: bold; font-size: 14px;">Monday</div>
+                                            <div style="font-size: 12px; color: #718096; font-weight: normal; margin-top: 2px;">
+                                                Jun 30
+                                            </div>
+                                        </div>
+                                    </th>
+                                    <th class="day-header" id="day-header-1">
+                                        <div class="day-actions">
+                                            <button class="day-action-btn" onclick="copyDay(1)" title="Copy Day">📋</button>
+                                            <button class="day-action-btn" onclick="clearDay(1)" title="Clear Day">🗑️</button>
+                                        </div>
+                                        <div class="day-content">
+                                            <div style="color: #e53e3e; font-weight: bold; font-size: 14px;">Tuesday</div>
+                                            <div style="font-size: 12px; color: #718096; font-weight: normal; margin-top: 2px;">
+                                                Jul 1
+                                            </div>
+                                        </div>
+                                    </th>
+                                    <th class="day-header" id="day-header-2">
+                                        <div class="day-actions">
+                                            <button class="day-action-btn" onclick="copyDay(2)" title="Copy Day">📋</button>
+                                            <button class="day-action-btn" onclick="clearDay(2)" title="Clear Day">🗑️</button>
+                                        </div>
+                                        <div class="day-content">
+                                            <div style="color: #e53e3e; font-weight: bold; font-size: 14px;">Wednesday</div>
+                                            <div style="font-size: 12px; color: #718096; font-weight: normal; margin-top: 2px;">
+                                                Jul 2
+                                            </div>
+                                        </div>
+                                    </th>
+                                    <th class="day-header" id="day-header-3">
+                                        <div class="day-actions">
+                                            <button class="day-action-btn" onclick="copyDay(3)" title="Copy Day">📋</button>
+                                            <button class="day-action-btn" onclick="clearDay(3)" title="Clear Day">🗑️</button>
+                                        </div>
+                                        <div class="day-content">
+                                            <div style="color: #e53e3e; font-weight: bold; font-size: 14px;">Thursday</div>
+                                            <div style="font-size: 12px; color: #718096; font-weight: normal; margin-top: 2px;">
+                                                Jul 3
+                                            </div>
+                                        </div>
+                                    </th>
+                                    <th class="day-header" id="day-header-4">
+                                        <div class="day-actions">
+                                            <button class="day-action-btn" onclick="copyDay(4)" title="Copy Day">📋</button>
+                                            <button class="day-action-btn" onclick="clearDay(4)" title="Clear Day">🗑️</button>
+                                        </div>
+                                        <div class="day-content">
+                                            <div style="color: #e53e3e; font-weight: bold; font-size: 14px;">Friday</div>
+                                            <div style="font-size: 12px; color: #718096; font-weight: normal; margin-top: 2px;">
+                                                Jul 4
+                                            </div>
+                                        </div>
+                                    </th>
+                                    <th class="day-header" id="day-header-5">
+                                        <div class="day-actions">
+                                            <button class="day-action-btn" onclick="copyDay(5)" title="Copy Day">📋</button>
+                                            <button class="day-action-btn" onclick="clearDay(5)" title="Clear Day">🗑️</button>
+                                        </div>
+                                        <div class="day-content">
+                                            <div style="color: #e53e3e; font-weight: bold; font-size: 14px;">Saturday</div>
+                                            <div style="font-size: 12px; color: #718096; font-weight: normal; margin-top: 2px;">
+                                                Jul 5
+                                            </div>
+                                        </div>
+                                    </th>
+                                    <th class="day-header" id="day-header-6">
+                                        <div class="day-actions">
+                                            <button class="day-action-btn" onclick="copyDay(6)" title="Copy Day">📋</button>
+                                            <button class="day-action-btn" onclick="clearDay(6)" title="Clear Day">🗑️</button>
+                                        </div>
+                                        <div class="day-content">
+                                            <div style="color: #e53e3e; font-weight: bold; font-size: 14px;">Sunday</div>
+                                            <div style="font-size: 12px; color: #718096; font-weight: normal; margin-top: 2px;">
+                                                Jul 6
+                                            </div>
+                                        </div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody id="mealTableBody">
+                                <!-- Generated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
 
-                return seasonalMeals[season];
-            }
-
-            getVariation(baseMeal) {
-                const variations = {
-                    'rice': 'Coconut Rice',
-                    'dal': 'Dal Tadka',
-                    'curry': 'Dry Curry',
-                    'biryani': 'Vegetable Pulao',
-                    'dosa': 'Rava Dosa',
-                    'idli': 'Rava Idli',
-                    'sandwich': 'Grilled Sandwich',
-                    'pasta': 'White Sauce Pasta'
-                };
-
-                const lowerMeal = baseMeal.toLowerCase();
-                for (const [key, variation] of Object.entries(variations)) {
-                    if (lowerMeal.includes(key)) {
-                        return variation;
-                    }
-                }
-
-                return `${baseMeal} (New Style)`;
-            }
-
-            showAIRecommendations(recommendations) {
-                if (recommendations.length === 0) {
-                    alert('Plan more varied meals to get better AI recommendations!');
-                    return;
-                }
-
-                let content = '<div style="margin-bottom: 20px;"><p style="color: #666; font-size: 14px;">Based on your family\'s eating patterns, here are some personalized suggestions:</p></div>';
-
-                recommendations.forEach(rec => {
-                    content += `
-                        <div class="ai-recommendation-category">
-                            <h4>${rec.category}</h4>
-                            <div class="ai-suggestions">
-                                ${rec.suggestions.map(suggestion => `
-                                    <button class="ai-suggestion-btn" onclick="mealPlanner.addRecommendedMeal('${suggestion}')">
-                                        ${suggestion} +
-                                    </button>
-                                `).join('')}
+                <!-- Shopping List Tab -->
+                <div id="shoppingTab" style="display: none;">
+                    <div class="shopping-section">
+                        <div class="add-item">
+                            <h3>Add to Shopping List</h3>
+                            <div class="add-item-form">
+                                <input type="text" id="newIngredient" placeholder="Enter ingredient or item..." onkeypress="handleIngredientKeyPress(event)">
+                                <button class="add-btn" onclick="addToShoppingList()">+ Add</button>
                             </div>
                         </div>
-                    `;
-                });
 
-                document.getElementById('aiRecommendationsContent').innerHTML = content;
-                document.getElementById('aiModal').style.display = 'flex';
-            }
-
-            addRecommendedMeal(mealName) {
-                // Find an empty slot to add the meal
-                const weekDates = getWeekDates(this.currentWeek);
-                const mealTypes = ['Breakfast', 'Lunch', 'Dinner'];
-                
-                for (let day = 0; day < 7; day++) {
-                    for (const mealType of mealTypes) {
-                        const dateKey = getDateKey(weekDates[day], day);
-                        if (!this.meals[dateKey] || !this.meals[dateKey][mealType] || this.meals[dateKey][mealType].trim() === '') {
-                            if (!this.meals[dateKey]) {
-                                this.meals[dateKey] = {};
-                            }
-                            this.meals[dateKey][mealType] = mealName;
-                            this.saveData();
-                            generateMealTable();
+                        <div class="shopping-list">
+                            <div class="shopping-controls">
+                                <button class="nav-btn secondary" onclick="toggleSelectMode()">📌 Select Mode</button>
+                                <button class="nav-btn" onclick="deleteSelectedItems()" id="deleteSelectedBtn" style="display: none;">🗑️ Delete Selected</button>
+                                <button class="nav-btn success" onclick="markSelectedCompleted()" id="markSelectedBtn" style="display: none;">✅ Mark Completed</button>
+                            </div>
                             
-                            alert(`Added "${mealName}" to ${weekDays[day]} ${mealType}!`);
-                            closeAIModal();
-                            return;
-                        }
-                    }
-                }
-                
-                alert('All meal slots are filled! Clear some slots first.');
-            }
+                            <h3>Shopping List</h3>
+                            <div id="shoppingItems">
+                                <!-- Generated by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-            // Utility functions
-            getWeekId(date) {
-                const weekDates = getWeekDates(date);
-                return weekDates[0].toISOString().split('T')[0];
-            }
-        }
+        <!-- Tips -->
+        <div class="tips">
+            <h3>🍳 Tips for Family Meal Planning</h3>
+            <div class="tips-grid">
+                <div class="tip-card orange">
+                    <strong>Smart Shopping:</strong> Click "Generate Shopping List" to extract ingredients from your meals automatically.
+                </div>
+                <div class="tip-card green">
+                    <strong>Copy & Paste:</strong> Use the 📋 buttons to copy entire days or individual meals between weeks.
+                </div>
+                <div class="tip-card blue">
+                    <strong>Family Sync:</strong> Changes appear instantly for all family members. Plan meals together in real-time!
+                </div>
+            </div>
+        </div>
+    </div>
 
-        // Global functions for AI modal
-        function closeAIModal() {
-            document.getElementById('aiModal').style.display = 'none';
-        }
+    <!-- Copy Modal -->
+    <div id="copyModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Copy from Previous Weeks</h2>
+                <button class="close-btn" onclick="closeCopyModal()">×</button>
+            </div>
+            
+            <div class="week-selector">
+                <p style="margin-bottom: 15px; color: #718096;">Select what to copy:</p>
+                <div class="week-list" id="previousWeeksList">
+                    <!-- Generated by JavaScript -->
+                </div>
+            </div>
 
-        // Initialize Firebase meal planner
-        let mealPlanner;
-        document.addEventListener('DOMContentLoaded', () => {
-            mealPlanner = new FamilyMealPlanner();
-        });
+            <div class="modal-actions">
+                <button class="nav-btn" onclick="closeCopyModal()">Cancel</button>
+                <button class="nav-btn success" onclick="copySelectedItems()">📋 Copy Selected</button>
+            </div>
+        </div>
+    </div>
 
-        // Your original JavaScript code (keeping all existing functionality)
+    <!-- Firebase Configuration -->
+    <script src="firebase-config.js"></script>
+    
+    <!-- Your Original JavaScript - Keep all existing functionality -->
+    <script>
+        // Your existing global variables
         let currentWeek = new Date();
         let meals = {};
         let shoppingList = [];
@@ -123,7 +195,58 @@ getSeasonalSuggestions() {
         const weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
         const mealTypes = ['Breakfast', 'Lunch', 'Dinner'];
 
-        // Ingredient extraction patterns
+        // Enhanced save function with Firebase sync
+        function saveData() {
+            localStorage.setItem('foodPlannerMeals', JSON.stringify(meals));
+            localStorage.setItem('foodPlannerShopping', JSON.stringify(shoppingList));
+            localStorage.setItem('foodPlannerCurrentWeek', currentWeek.toISOString());
+            
+            // Sync to Firebase if user is signed in
+            if (typeof syncToFirebase === 'function') {
+                syncToFirebase();
+            }
+        }
+
+        // Firebase sign-in handler
+        document.addEventListener('DOMContentLoaded', () => {
+            // Handle Google sign-in button
+            document.getElementById('google-signin').addEventListener('click', () => {
+                if (typeof firebase !== 'undefined' && firebase.auth) {
+                    const provider = new firebase.auth.GoogleAuthProvider();
+                    firebase.auth().signInWithPopup(provider)
+                        .then((result) => {
+                            console.log('✅ Sign-in successful!');
+                        })
+                        .catch((error) => {
+                            console.error('❌ Sign-in error:', error);
+                            alert('Sign-in failed. Please try again.');
+                        });
+                } else {
+                    alert('Firebase not configured. Please check firebase-config.js');
+                }
+            });
+
+            // Handle sign-out button
+            document.getElementById('sign-out-btn').addEventListener('click', () => {
+                if (typeof firebase !== 'undefined' && firebase.auth) {
+                    firebase.auth().signOut();
+                }
+            });
+
+            // Initialize app if no Firebase or fallback
+            setTimeout(() => {
+                if (!firebase || !firebase.auth || !firebase.auth().currentUser) {
+                    console.log('🔄 Fallback: Loading local version');
+                    // Show app without Firebase features
+                    document.getElementById('loading-screen').style.display = 'none';
+                    document.getElementById('firebase-user-info').style.display = 'none';
+                    document.getElementById('app-container').style.display = 'block';
+                    init();
+                }
+            }, 8000); // 8 second timeout for Firebase
+        });
+
+        // Your original functions - keep all of them exactly as they were
         const ingredientPatterns = {
             'mutton biryani': ['mutton', 'rice', 'onions', 'yogurt'],
             'chicken curry': ['chicken', 'onions', 'tomatoes', 'coconut'],
@@ -146,21 +269,6 @@ getSeasonalSuggestions() {
             'upma': ['semolina', 'vegetables'],
             'poha': ['flattened rice', 'onions', 'potatoes']
         };
-
-        // Enhanced save function with Firebase integration
-        function saveData() {
-            localStorage.setItem('foodPlannerMeals', JSON.stringify(meals));
-            localStorage.setItem('foodPlannerShopping', JSON.stringify(shoppingList));
-            localStorage.setItem('foodPlannerCurrentWeek', currentWeek.toISOString());
-            
-            // Save to Firebase if available
-            if (window.mealPlanner && window.mealPlanner.isFirebaseEnabled) {
-                window.mealPlanner.meals = meals;
-                window.mealPlanner.shoppingList = shoppingList;
-                window.mealPlanner.currentWeek = currentWeek;
-                window.mealPlanner.saveToFirebase();
-            }
-        }
 
         function loadData() {
             const savedMeals = localStorage.getItem('foodPlannerMeals');
@@ -199,23 +307,12 @@ getSeasonalSuggestions() {
                     Breakfast: 'Idli + Mutton Curry',
                     Lunch: 'Mutton Biryani',
                     Dinner: 'Noodles'
-                },
-                [`${weekDays[3]}-${weekDates[3].getDate()}-${weekDates[3].getMonth()}-${weekDates[3].getFullYear()}`]: {
-                    Breakfast: 'Pongal with ghee and chutney',
-                    Lunch: 'Puli Kulambu Sundaika + Kootu or carrot poriyal',
-                    Dinner: 'Chappathi + Egg'
-                },
-                [`${weekDays[4]}-${weekDates[4].getDate()}-${weekDates[4].getMonth()}-${weekDates[4].getFullYear()}`]: {
-                    Breakfast: 'Roti + mushroom or sabzi',
-                    Lunch: 'Pappu + Rice + Pappad',
-                    Dinner: '-'
                 }
             };
             meals = { ...meals, ...sampleMeals };
             saveData();
         }
 
-        // Week navigation functions
         function getWeekDates(date) {
             const week = [];
             const startDate = new Date(date);
@@ -248,12 +345,6 @@ getSeasonalSuggestions() {
             updateWeekDisplay();
             generateMealTable();
             saveData();
-            
-            // Update Firebase meal planner if available
-            if (window.mealPlanner && window.mealPlanner.isFirebaseEnabled) {
-                window.mealPlanner.currentWeek = currentWeek;
-                window.mealPlanner.loadDataFromFirebase();
-            }
         }
 
         function goToNextWeek() {
@@ -261,12 +352,6 @@ getSeasonalSuggestions() {
             updateWeekDisplay();
             generateMealTable();
             saveData();
-            
-            // Update Firebase meal planner if available
-            if (window.mealPlanner && window.mealPlanner.isFirebaseEnabled) {
-                window.mealPlanner.currentWeek = currentWeek;
-                window.mealPlanner.loadDataFromFirebase();
-            }
         }
 
         function goToCurrentWeek() {
@@ -274,21 +359,13 @@ getSeasonalSuggestions() {
             updateWeekDisplay();
             generateMealTable();
             saveData();
-            
-            // Update Firebase meal planner if available
-            if (window.mealPlanner && window.mealPlanner.isFirebaseEnabled) {
-                window.mealPlanner.currentWeek = currentWeek;
-                window.mealPlanner.loadDataFromFirebase();
-            }
         }
 
-        // All your existing functions remain the same...
         function generateMealTable() {
             const weekDates = getWeekDates(currentWeek);
             const tbody = document.getElementById('mealTableBody');
             tbody.innerHTML = '';
 
-            // Update header with dates
             weekDays.forEach((day, index) => {
                 const header = document.getElementById(`day-header-${index}`);
                 if (header) {
@@ -307,7 +384,6 @@ getSeasonalSuggestions() {
                 }
             });
 
-            // Initialize meals for current week
             weekDates.forEach((date, index) => {
                 const dateKey = getDateKey(date, index);
                 if (!meals[dateKey]) {
@@ -319,7 +395,6 @@ getSeasonalSuggestions() {
                 }
             });
 
-            // Generate rows
             mealTypes.forEach(mealType => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
@@ -417,7 +492,7 @@ getSeasonalSuggestions() {
             editingCell = null;
         }
 
-        // Initialize app when DOM is ready
+        // Initialize app
         function init() {
             loadData();
             updateWeekDisplay();
@@ -426,9 +501,7 @@ getSeasonalSuggestions() {
             setupDragAndDrop();
         }
 
-        // Keep all your existing functions (drag & drop, shopping list, etc.)
-        // I'll include the key ones here...
-
+        // Keep all your other existing functions...
         function setupDragAndDrop() {
             document.addEventListener('dragstart', handleDragStart);
             document.addEventListener('dragover', handleDragOver);
@@ -468,13 +541,11 @@ getSeasonalSuggestions() {
             const weekDates = getWeekDates(currentWeek);
             
             if (draggedMeal && draggedFromDay !== null) {
-                // Clear source
                 const sourceKey = getDateKey(weekDates[draggedFromDay], parseInt(draggedFromDay));
                 if (meals[sourceKey]) {
                     meals[sourceKey][draggedFromMealType] = '';
                 }
                 
-                // Set target
                 const targetKey = getDateKey(weekDates[targetDay], parseInt(targetDay));
                 if (!meals[targetKey]) {
                     meals[targetKey] = {};
@@ -501,7 +572,6 @@ getSeasonalSuggestions() {
             draggedFromMealType = null;
         }
 
-        // Copy day functions
         function copyDay(dayIndex) {
             const weekDates = getWeekDates(currentWeek);
             const dateKey = getDateKey(weekDates[dayIndex], dayIndex);
@@ -515,7 +585,7 @@ getSeasonalSuggestions() {
             localStorage.setItem('copiedDay', JSON.stringify(dayMeals));
             localStorage.setItem('copiedDayName', weekDays[dayIndex]);
             
-            alert(`📋 Copied ${weekDays[dayIndex]}'s meals! Use paste button on any day to paste.`);
+            alert(`📋 Copied ${weekDays[dayIndex]}'s meals!`);
         }
 
         function clearDay(dayIndex) {
@@ -534,7 +604,6 @@ getSeasonalSuggestions() {
             }
         }
 
-        // Shopping list functions
         function generateShoppingList() {
             const weekDates = getWeekDates(currentWeek);
             const allIngredients = [];
@@ -560,8 +629,7 @@ getSeasonalSuggestions() {
                     shoppingList.push({
                         id: Date.now() + Math.random(),
                         name: ingredient.charAt(0).toUpperCase() + ingredient.slice(1),
-                        completed: false,
-                        weekGenerated: getWeekKey(currentWeek)
+                        completed: false
                     });
                     addedCount++;
                 }
@@ -584,14 +652,12 @@ getSeasonalSuggestions() {
             const meal = mealText.toLowerCase().trim();
             const ingredients = [];
             
-            // Check for known dish patterns
             for (const [dish, dishIngredients] of Object.entries(ingredientPatterns)) {
                 if (meal.includes(dish)) {
                     ingredients.push(...dishIngredients);
                 }
             }
             
-            // Extract individual ingredients from text
             const parts = meal.split(/[+,&\s]+/).map(part => part.trim()).filter(part => part.length > 2);
             
             parts.forEach(part => {
@@ -615,11 +681,6 @@ getSeasonalSuggestions() {
             return [...new Set(ingredients)];
         }
 
-        function getWeekKey(date) {
-            const weekDates = getWeekDates(date);
-            return `${weekDates[0].getFullYear()}-W${Math.ceil(weekDates[0].getDate() / 7)}`;
-        }
-
         function clearShoppingList() {
             if (confirm('Clear all items from shopping list?')) {
                 shoppingList = [];
@@ -636,8 +697,7 @@ getSeasonalSuggestions() {
                 shoppingList.push({
                     id: Date.now(),
                     name: ingredient,
-                    completed: false,
-                    weekGenerated: null
+                    completed: false
                 });
                 input.value = '';
                 updateShoppingDisplay();
@@ -804,7 +864,6 @@ getSeasonalSuggestions() {
             }
         }
 
-        // Copy modal functions
         function openCopyModal() {
             generateCopyOptions();
             document.getElementById('copyModal').classList.add('show');
@@ -823,7 +882,6 @@ getSeasonalSuggestions() {
             const currentWeekDates = getWeekDates(currentWeek);
             const currentWeekStart = currentWeekDates[0];
 
-            // Look back up to 12 weeks
             for (let weeksBack = 1; weeksBack <= 12; weeksBack++) {
                 const weekDate = new Date(currentWeekStart);
                 weekDate.setDate(weekDate.getDate() - (weeksBack * 7));
@@ -956,7 +1014,6 @@ getSeasonalSuggestions() {
             return diffWeeks === 1 ? '1 week' : `${diffWeeks} weeks`;
         }
 
-        // Download as image function
         async function downloadAsImage() {
             try {
                 const btn = event.target;
@@ -983,7 +1040,7 @@ getSeasonalSuggestions() {
                 `;
                 header.innerHTML = `
                     <h1 style="color: #e53e3e; font-size: 28px; margin: 0 0 10px 0;">
-                        🍽️ Weekly Food Planner
+                        🍽️ Family Weekly Food Planner
                     </h1>
                     <p style="font-size: 18px; color: #2d3748; font-weight: bold; margin: 0;">
                         ${weekRange}
@@ -1112,21 +1169,6 @@ getSeasonalSuggestions() {
             if (event.target === modal) {
                 closeCopyModal();
             }
-            
-            const aiModal = document.getElementById('aiModal');
-            if (event.target === aiModal) {
-                closeAIModal();
-            }
-        });
-
-        // Initialize app when page loads - but Firebase will override if configured
-        document.addEventListener('DOMContentLoaded', () => {
-            // Small delay to let Firebase initialize first
-            setTimeout(() => {
-                if (!window.mealPlanner || !window.mealPlanner.isFirebaseEnabled) {
-                    init();
-                }
-            }, 1000);
         });
     </script>
 </body>
@@ -1151,7 +1193,7 @@ getSeasonalSuggestions() {
             line-height: 1.6;
         }
 
-        /* Firebase Loading Screen */
+        /* Loading Screen */
         .loading-screen {
             position: fixed;
             top: 0;
@@ -1178,7 +1220,7 @@ getSeasonalSuggestions() {
             60% { transform: translateY(-10px); }
         }
 
-        /* Firebase Authentication */
+        /* Authentication */
         .auth-container {
             position: fixed;
             top: 0;
@@ -1186,7 +1228,7 @@ getSeasonalSuggestions() {
             width: 100%;
             height: 100%;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
+            display: none;
             justify-content: center;
             align-items: center;
             z-index: 1000;
@@ -1200,24 +1242,18 @@ getSeasonalSuggestions() {
             text-align: center;
             max-width: 450px;
             width: 90%;
-            animation: slideUp 0.5s ease-out;
-        }
-
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
         }
 
         .auth-card h1 {
             margin-bottom: 1rem;
             color: #333;
-            font-size: 2.5rem;
+            font-size: 2.2rem;
         }
 
         .auth-card p {
             margin-bottom: 2rem;
             color: #666;
-            font-size: 1.1rem;
+            font-size: 1rem;
         }
 
         .google-signin-btn {
@@ -1236,10 +1272,9 @@ getSeasonalSuggestions() {
         .google-signin-btn:hover {
             background: #3367d6;
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(66, 133, 244, 0.4);
         }
 
-        /* Firebase User Info */
+        /* User Info in Header */
         .firebase-user-info {
             display: flex;
             align-items: center;
@@ -1248,13 +1283,13 @@ getSeasonalSuggestions() {
             padding: 1rem;
             background: rgba(255,255,255,0.1);
             border-radius: 10px;
-            flex-wrap: wrap;
             justify-content: center;
+            flex-wrap: wrap;
         }
 
         .firebase-user-photo {
-            width: 40px;
-            height: 40px;
+            width: 35px;
+            height: 35px;
             border-radius: 50%;
             border: 2px solid #4caf50;
         }
@@ -1264,103 +1299,17 @@ getSeasonalSuggestions() {
             color: #2d3748;
         }
 
-        .ai-recommendations-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
-            color: white !important;
-        }
-
-        .ai-recommendations-btn:hover {
-            background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%) !important;
-        }
-
-        /* Real-time indicator */
-        .realtime-indicator {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: #4caf50;
-            color: white;
-            padding: 6px 12px;
-            border-radius: 15px;
-            font-size: 11px;
-            z-index: 1000;
-            animation: pulse 2s infinite;
-            display: none;
-        }
-
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.7; }
-            100% { opacity: 1; }
-        }
-
-        /* AI Recommendations Modal */
-        .ai-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 2000;
-        }
-
-        .ai-modal-content {
-            background: white;
-            padding: 30px;
-            border-radius: 20px;
-            max-width: 600px;
-            width: 90%;
-            max-height: 80vh;
-            overflow-y: auto;
-            animation: slideIn 0.3s ease;
-        }
-
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(-50px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .ai-recommendation-category {
-            margin: 20px 0;
-            padding: 20px;
-            background: #f8f9fa;
-            border-radius: 15px;
-            border-left: 4px solid #667eea;
-        }
-
-        .ai-recommendation-category h4 {
-            margin: 0 0 15px 0;
-            color: #2c3e50;
-            font-size: 1.1rem;
-        }
-
-        .ai-suggestions {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .ai-suggestion-btn {
-            background: #4caf50;
+        .sign-out-btn {
+            background: #dc3545;
             color: white;
             border: none;
-            padding: 8px 15px;
+            padding: 8px 16px;
             border-radius: 20px;
             cursor: pointer;
-            font-size: 13px;
-            transition: all 0.3s ease;
+            font-size: 14px;
         }
 
-        .ai-suggestion-btn:hover {
-            background: #45a049;
-            transform: translateY(-1px);
-        }
-
-        /* Keep all your existing styles below */
+        /* Your existing styles - keep all of them */
         .container {
             max-width: 1200px;
             margin: 0 auto;
@@ -1616,6 +1565,7 @@ getSeasonalSuggestions() {
             font-style: italic;
         }
 
+        /* All your other existing styles... */
         .shopping-section {
             margin-bottom: 30px;
         }
@@ -1980,6 +1930,11 @@ getSeasonalSuggestions() {
             to { opacity: 1; }
         }
 
+        @keyframes slideIn {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
         /* Mobile optimizations */
         @media (max-width: 768px) {
             .meal-table {
@@ -2041,7 +1996,6 @@ getSeasonalSuggestions() {
 
             .firebase-user-info {
                 flex-direction: column;
-                text-align: center;
                 gap: 0.5rem;
             }
         }
@@ -2090,24 +2044,19 @@ getSeasonalSuggestions() {
     </div>
 
     <!-- Authentication Container -->
-    <div id="auth-container" class="auth-container" style="display: none;">
+    <div id="auth-container" class="auth-container">
         <div class="auth-card">
             <h1>🍽️ Family Meal Planner</h1>
             <p>Plan meals together with your family in real-time</p>
             <button id="google-signin" class="google-signin-btn">
                 📧 Sign in with Google
             </button>
-            <div style="margin-top: 1rem; padding: 1rem; background: #f0f8ff; border-radius: 10px;">
+            <div style="margin-top: 1.5rem; padding: 1rem; background: #f0f8ff; border-radius: 10px;">
                 <p style="font-size: 0.9rem; color: #666; margin: 0;">
-                    ✨ <strong>New Features:</strong> Real-time family collaboration, AI meal recommendations, and cloud sync!
+                    ✨ <strong>Family Features:</strong> Real-time collaboration and cloud sync across all devices!
                 </p>
             </div>
         </div>
-    </div>
-
-    <!-- Real-time indicator -->
-    <div class="realtime-indicator" id="realtime-indicator">
-        🔄 Syncing with family...
     </div>
 
     <!-- Main App Container -->
@@ -2120,8 +2069,7 @@ getSeasonalSuggestions() {
             <div class="firebase-user-info" id="firebase-user-info">
                 <img id="user-photo" class="firebase-user-photo" src="" alt="User">
                 <span id="user-name" class="firebase-user-name">Loading...</span>
-                <button id="ai-recommendations" class="nav-btn ai-recommendations-btn">🤖 AI Suggestions</button>
-                <button id="sign-out-btn" class="nav-btn" style="background: #dc3545;">Sign Out</button>
+                <button id="sign-out-btn" class="sign-out-btn">Sign Out</button>
             </div>
             
             <div class="week-nav">
@@ -2144,731 +2092,4 @@ getSeasonalSuggestions() {
 
         <!-- Tabs -->
         <div class="tabs">
-            <div class="tab-nav">
-                <button class="tab-btn active" onclick="switchTab('planner')">
-                    📅 Meal Planner
-                </button>
-                <button class="tab-btn" onclick="switchTab('shopping')">
-                    🛒 Shopping List (<span id="shoppingCount">0</span>)
-                </button>
-            </div>
-
-            <div class="tab-content">
-                <!-- Meal Planner Tab -->
-                <div id="plannerTab">
-                    <div style="overflow-x: auto;">
-                        <table class="meal-table" id="mealTable">
-                            <thead>
-                                <tr>
-                                    <th class="meal-type">Day</th>
-                                    <th class="day-header" id="day-header-0">
-                                        <div class="day-actions">
-                                            <button class="day-action-btn" onclick="copyDay(0)" title="Copy Day">📋</button>
-                                            <button class="day-action-btn" onclick="clearDay(0)" title="Clear Day">🗑️</button>
-                                        </div>
-                                        <div class="day-content">
-                                            <div style="color: #e53e3e; font-weight: bold; font-size: 14px;">Monday</div>
-                                            <div style="font-size: 12px; color: #718096; font-weight: normal; margin-top: 2px;">
-                                                Jun 30
-                                            </div>
-                                        </div>
-                                    </th>
-                                    <th class="day-header" id="day-header-1">
-                                        <div class="day-actions">
-                                            <button class="day-action-btn" onclick="copyDay(1)" title="Copy Day">📋</button>
-                                            <button class="day-action-btn" onclick="clearDay(1)" title="Clear Day">🗑️</button>
-                                        </div>
-                                        <div class="day-content">
-                                            <div style="color: #e53e3e; font-weight: bold; font-size: 14px;">Tuesday</div>
-                                            <div style="font-size: 12px; color: #718096; font-weight: normal; margin-top: 2px;">
-                                                Jul 1
-                                            </div>
-                                        </div>
-                                    </th>
-                                    <th class="day-header" id="day-header-2">
-                                        <div class="day-actions">
-                                            <button class="day-action-btn" onclick="copyDay(2)" title="Copy Day">📋</button>
-                                            <button class="day-action-btn" onclick="clearDay(2)" title="Clear Day">🗑️</button>
-                                        </div>
-                                        <div class="day-content">
-                                            <div style="color: #e53e3e; font-weight: bold; font-size: 14px;">Wednesday</div>
-                                            <div style="font-size: 12px; color: #718096; font-weight: normal; margin-top: 2px;">
-                                                Jul 2
-                                            </div>
-                                        </div>
-                                    </th>
-                                    <th class="day-header" id="day-header-3">
-                                        <div class="day-actions">
-                                            <button class="day-action-btn" onclick="copyDay(3)" title="Copy Day">📋</button>
-                                            <button class="day-action-btn" onclick="clearDay(3)" title="Clear Day">🗑️</button>
-                                        </div>
-                                        <div class="day-content">
-                                            <div style="color: #e53e3e; font-weight: bold; font-size: 14px;">Thursday</div>
-                                            <div style="font-size: 12px; color: #718096; font-weight: normal; margin-top: 2px;">
-                                                Jul 3
-                                            </div>
-                                        </div>
-                                    </th>
-                                    <th class="day-header" id="day-header-4">
-                                        <div class="day-actions">
-                                            <button class="day-action-btn" onclick="copyDay(4)" title="Copy Day">📋</button>
-                                            <button class="day-action-btn" onclick="clearDay(4)" title="Clear Day">🗑️</button>
-                                        </div>
-                                        <div class="day-content">
-                                            <div style="color: #e53e3e; font-weight: bold; font-size: 14px;">Friday</div>
-                                            <div style="font-size: 12px; color: #718096; font-weight: normal; margin-top: 2px;">
-                                                Jul 4
-                                            </div>
-                                        </div>
-                                    </th>
-                                    <th class="day-header" id="day-header-5">
-                                        <div class="day-actions">
-                                            <button class="day-action-btn" onclick="copyDay(5)" title="Copy Day">📋</button>
-                                            <button class="day-action-btn" onclick="clearDay(5)" title="Clear Day">🗑️</button>
-                                        </div>
-                                        <div class="day-content">
-                                            <div style="color: #e53e3e; font-weight: bold; font-size: 14px;">Saturday</div>
-                                            <div style="font-size: 12px; color: #718096; font-weight: normal; margin-top: 2px;">
-                                                Jul 5
-                                            </div>
-                                        </div>
-                                    </th>
-                                    <th class="day-header" id="day-header-6">
-                                        <div class="day-actions">
-                                            <button class="day-action-btn" onclick="copyDay(6)" title="Copy Day">📋</button>
-                                            <button class="day-action-btn" onclick="clearDay(6)" title="Clear Day">🗑️</button>
-                                        </div>
-                                        <div class="day-content">
-                                            <div style="color: #e53e3e; font-weight: bold; font-size: 14px;">Sunday</div>
-                                            <div style="font-size: 12px; color: #718096; font-weight: normal; margin-top: 2px;">
-                                                Jul 6
-                                            </div>
-                                        </div>
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody id="mealTableBody">
-                                <!-- Generated by JavaScript -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- Shopping List Tab -->
-                <div id="shoppingTab" style="display: none;">
-                    <div class="shopping-section">
-                        <div class="add-item">
-                            <h3>Add to Shopping List</h3>
-                            <div class="add-item-form">
-                                <input type="text" id="newIngredient" placeholder="Enter ingredient or item..." onkeypress="handleIngredientKeyPress(event)">
-                                <button class="add-btn" onclick="addToShoppingList()">+ Add</button>
-                            </div>
-                        </div>
-
-                        <div class="shopping-list">
-                            <div class="shopping-controls">
-                                <button class="nav-btn secondary" onclick="toggleSelectMode()">📌 Select Mode</button>
-                                <button class="nav-btn" onclick="deleteSelectedItems()" id="deleteSelectedBtn" style="display: none;">🗑️ Delete Selected</button>
-                                <button class="nav-btn success" onclick="markSelectedCompleted()" id="markSelectedBtn" style="display: none;">✅ Mark Completed</button>
-                            </div>
-                            
-                            <h3>Shopping List</h3>
-                            <div id="shoppingItems">
-                                <!-- Generated by JavaScript -->
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Tips -->
-        <div class="tips">
-            <h3>🍳 Tips for Family Meal Planning</h3>
-            <div class="tips-grid">
-                <div class="tip-card orange">
-                    <strong>Smart Shopping:</strong> Click "Generate Shopping List" to extract ingredients from your meals automatically.
-                </div>
-                <div class="tip-card green">
-                    <strong>Copy & Paste:</strong> Use the 📋 buttons to copy entire days or individual meals between weeks.
-                </div>
-                <div class="tip-card blue">
-                    <strong>Real-time Sync:</strong> Changes appear instantly for all family members. Add meals together in real-time!
-                </div>
-                <div class="tip-card orange">
-                    <strong>AI Suggestions:</strong> Get personalized meal recommendations based on your family's eating patterns.
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Copy Modal -->
-    <div id="copyModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title">Copy from Previous Weeks</h2>
-                <button class="close-btn" onclick="closeCopyModal()">×</button>
-            </div>
-            
-            <div class="week-selector">
-                <p style="margin-bottom: 15px; color: #718096;">Select what to copy:</p>
-                <div class="week-list" id="previousWeeksList">
-                    <!-- Generated by JavaScript -->
-                </div>
-            </div>
-
-            <div class="modal-actions">
-                <button class="nav-btn" onclick="closeCopyModal()">Cancel</button>
-                <button class="nav-btn success" onclick="copySelectedItems()">📋 Copy Selected</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- AI Recommendations Modal -->
-    <div id="aiModal" class="ai-modal">
-        <div class="ai-modal-content">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #e2e8f0;">
-                <h2 style="margin: 0; color: #2c3e50;">🤖 AI Meal Recommendations</h2>
-                <button onclick="closeAIModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #718096; padding: 5px; border-radius: 5px;">×</button>
-            </div>
-            
-            <div id="aiRecommendationsContent">
-                <!-- AI recommendations will be populated here -->
-            </div>
-
-            <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #e2e8f0; text-align: right;">
-                <button onclick="closeAIModal()" class="nav-btn">Close</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Firebase Configuration -->
-    <script src="firebase-config.js"></script>
-    
-    <script>
-        // Enhanced Family Meal Planner with Firebase Integration
-        class FamilyMealPlanner {
-            constructor() {
-                this.currentUser = null;
-                this.familyId = null;
-                this.currentWeek = new Date();
-                this.meals = {};
-                this.shoppingList = [];
-                this.mealHistory = [];
-                this.isFirebaseEnabled = false;
-                
-                this.init();
-            }
-
-            init() {
-                this.showLoading();
-                this.setupAuthListeners();
-                this.setupEventListeners();
-            }
-
-            // Authentication & Firebase
-            setupAuthListeners() {
-                if (typeof firebase !== 'undefined' && firebase.auth) {
-                    auth.onAuthStateChanged(async (user) => {
-                        if (user) {
-                            this.currentUser = user;
-                            this.familyId = user.uid;
-                            this.isFirebaseEnabled = true;
-                            await this.initializeApp();
-                        } else {
-                            this.currentUser = null;
-                            this.isFirebaseEnabled = false;
-                            this.showAuthScreen();
-                        }
-                    });
-                } else {
-                    // Fallback to local storage mode
-                    console.log('Firebase not configured, using local storage mode');
-                    this.isFirebaseEnabled = false;
-                    this.initializeLocalApp();
-                }
-            }
-
-            setupEventListeners() {
-                // AI recommendations
-                document.addEventListener('click', (e) => {
-                    if (e.target.id === 'ai-recommendations') {
-                        this.generateAIRecommendations();
-                    }
-                    if (e.target.id === 'google-signin') {
-                        this.signInWithGoogle();
-                    }
-                    if (e.target.id === 'sign-out-btn') {
-                        this.signOut();
-                    }
-                });
-            }
-
-            showLoading() {
-                document.getElementById('loading-screen').style.display = 'flex';
-                document.getElementById('auth-container').style.display = 'none';
-                document.getElementById('app-container').style.display = 'none';
-            }
-
-            showAuthScreen() {
-                document.getElementById('loading-screen').style.display = 'none';
-                document.getElementById('auth-container').style.display = 'flex';
-                document.getElementById('app-container').style.display = 'none';
-            }
-
-            showMainApp() {
-                document.getElementById('loading-screen').style.display = 'none';
-                document.getElementById('auth-container').style.display = 'none';
-                document.getElementById('app-container').style.display = 'block';
-            }
-
-            async signInWithGoogle() {
-                if (!firebase.auth) {
-                    alert('Firebase not configured. Please set up firebase-config.js');
-                    return;
-                }
-                
-                try {
-                    const provider = new firebase.auth.GoogleAuthProvider();
-                    await auth.signInWithPopup(provider);
-                } catch (error) {
-                    console.error('Sign-in error:', error);
-                    alert('Sign-in failed. Please try again.');
-                }
-            }
-
-            signOut() {
-                if (firebase.auth) {
-                    auth.signOut();
-                } else {
-                    this.showAuthScreen();
-                }
-            }
-
-            async initializeApp() {
-                try {
-                    this.showMainApp();
-                    this.updateUserInfo();
-                    
-                    if (this.isFirebaseEnabled) {
-                        await this.loadDataFromFirebase();
-                        this.setupRealtimeUpdates();
-                        this.showRealtimeIndicator();
-                    } else {
-                        this.loadLocalData();
-                    }
-                    
-                    this.initializeOriginalApp();
-                    this.loadMealHistory();
-                    
-                } catch (error) {
-                    console.error('App initialization error:', error);
-                }
-            }
-
-            initializeLocalApp() {
-                this.showMainApp();
-                this.hideFirebaseFeatures();
-                this.loadLocalData();
-                this.initializeOriginalApp();
-            }
-
-            hideFirebaseFeatures() {
-                const userInfo = document.getElementById('firebase-user-info');
-                if (userInfo) {
-                    userInfo.style.display = 'none';
-                }
-            }
-
-            updateUserInfo() {
-                if (this.currentUser) {
-                    document.getElementById('user-name').textContent = this.currentUser.displayName || 'Family Member';
-                    document.getElementById('user-photo').src = this.currentUser.photoURL || 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"><circle cx="20" cy="20" r="20" fill="%234caf50"/><text x="20" y="26" text-anchor="middle" fill="white" font-size="16">👤</text></svg>';
-                }
-            }
-
-            showRealtimeIndicator() {
-                const indicator = document.getElementById('realtime-indicator');
-                indicator.style.display = 'block';
-                setTimeout(() => {
-                    indicator.style.display = 'none';
-                }, 3000);
-            }
-
-            // Firebase Data Management
-            async loadDataFromFirebase() {
-                if (!this.isFirebaseEnabled) return;
-                
-                try {
-                    // Load current week's meal plan
-                    const weekId = this.getWeekId(this.currentWeek);
-                    const mealPlanDoc = await db.collection('families')
-                        .doc(this.familyId)
-                        .collection('mealPlans')
-                        .doc(weekId)
-                        .get();
-
-                    if (mealPlanDoc.exists) {
-                        this.meals = this.convertFirebaseToLocalFormat(mealPlanDoc.data());
-                    }
-
-                    // Load shopping list
-                    const shoppingDoc = await db.collection('families')
-                        .doc(this.familyId)
-                        .collection('shoppingList')
-                        .doc('current')
-                        .get();
-
-                    if (shoppingDoc.exists) {
-                        this.shoppingList = shoppingDoc.data().items || [];
-                    }
-
-                } catch (error) {
-                    console.error('Error loading data from Firebase:', error);
-                    this.loadLocalData(); // Fallback to local storage
-                }
-            }
-
-            convertFirebaseToLocalFormat(firebaseData) {
-                const localMeals = {};
-                const weekDates = getWeekDates(this.currentWeek);
-                
-                Object.keys(firebaseData).forEach(key => {
-                    if (key.includes('-')) {
-                        const [day, mealType] = key.split('-');
-                        const dayIndex = parseInt(day);
-                        if (weekDates[dayIndex]) {
-                            const dateKey = getDateKey(weekDates[dayIndex], dayIndex);
-                            if (!localMeals[dateKey]) {
-                                localMeals[dateKey] = {};
-                            }
-                            localMeals[dateKey][mealType] = firebaseData[key].content || firebaseData[key];
-                        }
-                    }
-                });
-                
-                return localMeals;
-            }
-
-            async saveToFirebase() {
-                if (!this.isFirebaseEnabled) return;
-                
-                try {
-                    const weekId = this.getWeekId(this.currentWeek);
-                    const firebaseData = this.convertLocalToFirebaseFormat();
-                    
-                    await db.collection('families')
-                        .doc(this.familyId)
-                        .collection('mealPlans')
-                        .doc(weekId)
-                        .set(firebaseData, { merge: true });
-
-                    // Save shopping list
-                    await db.collection('families')
-                        .doc(this.familyId)
-                        .collection('shoppingList')
-                        .doc('current')
-                        .set({ items: this.shoppingList });
-
-                } catch (error) {
-                    console.error('Error saving to Firebase:', error);
-                }
-            }
-
-            convertLocalToFirebaseFormat() {
-                const firebaseData = {};
-                const weekDates = getWeekDates(this.currentWeek);
-                
-                Object.keys(this.meals).forEach(dateKey => {
-                    const dayIndex = this.getDayIndexFromDateKey(dateKey, weekDates);
-                    if (dayIndex !== -1 && this.meals[dateKey]) {
-                        Object.keys(this.meals[dateKey]).forEach(mealType => {
-                            if (this.meals[dateKey][mealType]) {
-                                const key = `${dayIndex}-${mealType}`;
-                                firebaseData[key] = {
-                                    content: this.meals[dateKey][mealType],
-                                    updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-                                    updatedBy: this.currentUser ? this.currentUser.displayName : 'Family Member'
-                                };
-                            }
-                        });
-                    }
-                });
-                
-                return firebaseData;
-            }
-
-            getDayIndexFromDateKey(dateKey, weekDates) {
-                const parts = dateKey.split('-');
-                const day = parseInt(parts[1]);
-                const month = parseInt(parts[2]);
-                const year = parseInt(parts[3]);
-                
-                for (let i = 0; i < weekDates.length; i++) {
-                    const date = weekDates[i];
-                    if (date.getDate() === day && date.getMonth() === month && date.getFullYear() === year) {
-                        return i;
-                    }
-                }
-                return -1;
-            }
-
-            setupRealtimeUpdates() {
-                if (!this.isFirebaseEnabled) return;
-                
-                const weekId = this.getWeekId(this.currentWeek);
-                
-                // Listen for meal plan changes
-                db.collection('families')
-                    .doc(this.familyId)
-                    .collection('mealPlans')
-                    .doc(weekId)
-                    .onSnapshot((doc) => {
-                        if (doc.exists) {
-                            this.meals = this.convertFirebaseToLocalFormat(doc.data());
-                            generateMealTable(); // Refresh the table
-                            this.showRealtimeIndicator();
-                        }
-                    });
-
-                // Listen for shopping list changes
-                db.collection('families')
-                    .doc(this.familyId)
-                    .collection('shoppingList')
-                    .doc('current')
-                    .onSnapshot((doc) => {
-                        if (doc.exists) {
-                            this.shoppingList = doc.data().items || [];
-                            updateShoppingDisplay(); // Refresh shopping list
-                        }
-                    });
-            }
-
-            loadLocalData() {
-                const savedMeals = localStorage.getItem('foodPlannerMeals');
-                const savedShopping = localStorage.getItem('foodPlannerShopping');
-                const savedWeek = localStorage.getItem('foodPlannerCurrentWeek');
-
-                if (savedMeals) {
-                    this.meals = JSON.parse(savedMeals);
-                }
-                if (savedShopping) {
-                    this.shoppingList = JSON.parse(savedShopping);
-                }
-                if (savedWeek) {
-                    this.currentWeek = new Date(savedWeek);
-                }
-
-                // Add sample data if empty
-                if (Object.keys(this.meals).length === 0) {
-                    this.addSampleData();
-                }
-
-                // Update global variables for compatibility
-                meals = this.meals;
-                shoppingList = this.shoppingList;
-                currentWeek = this.currentWeek;
-            }
-
-            addSampleData() {
-                const weekDates = getWeekDates(this.currentWeek);
-                const sampleMeals = {
-                    [`${weekDays[0]}-${weekDates[0].getDate()}-${weekDates[0].getMonth()}-${weekDates[0].getFullYear()}`]: {
-                        Breakfast: 'Idiyappam + coconut milk',
-                        Lunch: 'Garlic Rice and Egg roast',
-                        Dinner: 'Sandwich'
-                    },
-                    [`${weekDays[1]}-${weekDates[1].getDate()}-${weekDates[1].getMonth()}-${weekDates[1].getFullYear()}`]: {
-                        Breakfast: 'Bread Omelette',
-                        Lunch: 'Manathakkali Kootu + Rice + Sambhar',
-                        Dinner: 'Pasta'
-                    },
-                    [`${weekDays[2]}-${weekDates[2].getDate()}-${weekDates[2].getMonth()}-${weekDates[2].getFullYear()}`]: {
-                        Breakfast: 'Idli + Mutton Curry',
-                        Lunch: 'Mutton Biryani',
-                        Dinner: 'Noodles'
-                    }
-                };
-                this.meals = { ...this.meals, ...sampleMeals };
-                this.saveData();
-            }
-
-            saveData() {
-                // Save to local storage
-                localStorage.setItem('foodPlannerMeals', JSON.stringify(this.meals));
-                localStorage.setItem('foodPlannerShopping', JSON.stringify(this.shoppingList));
-                localStorage.setItem('foodPlannerCurrentWeek', this.currentWeek.toISOString());
-                
-                // Update global variables
-                meals = this.meals;
-                shoppingList = this.shoppingList;
-                currentWeek = this.currentWeek;
-                
-                // Save to Firebase if enabled
-                if (this.isFirebaseEnabled) {
-                    this.saveToFirebase();
-                }
-            }
-
-            initializeOriginalApp() {
-                // Initialize your original app functionality
-                updateWeekDisplay();
-                generateMealTable();
-                updateShoppingDisplay();
-                setupDragAndDrop();
-            }
-
-            // AI Recommendations System
-            loadMealHistory() {
-                // Build meal history from all stored meals for AI analysis
-                this.mealHistory = [];
-                
-                Object.keys(this.meals).forEach(dateKey => {
-                    if (this.meals[dateKey]) {
-                        Object.keys(this.meals[dateKey]).forEach(mealType => {
-                            const content = this.meals[dateKey][mealType];
-                            if (content && content.trim() !== '' && content !== '-') {
-                                this.mealHistory.push({
-                                    content: content,
-                                    mealType: mealType,
-                                    dateKey: dateKey
-                                });
-                            }
-                        });
-                    }
-                });
-            }
-
-            generateAIRecommendations() {
-                this.loadMealHistory();
-                
-                if (this.mealHistory.length < 5) {
-                    alert('Plan more meals to get AI recommendations! Need at least 5 meals in your history.');
-                    return;
-                }
-
-                const analysis = this.analyzeEatingPatterns();
-                this.showAIRecommendations(analysis);
-            }
-
-            analyzeEatingPatterns() {
-                const patterns = {
-                    mealFrequency: {},
-                    cuisineTypes: {},
-                    mealTypeDistribution: { Breakfast: 0, Lunch: 0, Dinner: 0 },
-                    varietyScore: 0
-                };
-
-                this.mealHistory.forEach(meal => {
-                    patterns.mealFrequency[meal.content] = (patterns.mealFrequency[meal.content] || 0) + 1;
-                    patterns.mealTypeDistribution[meal.mealType]++;
-                    
-                    const cuisine = this.detectCuisine(meal.content);
-                    patterns.cuisineTypes[cuisine] = (patterns.cuisineTypes[cuisine] || 0) + 1;
-                });
-
-                const uniqueMeals = Object.keys(patterns.mealFrequency).length;
-                patterns.varietyScore = Math.round((uniqueMeals / this.mealHistory.length) * 100);
-
-                return this.generateSmartRecommendations(patterns);
-            }
-
-            detectCuisine(mealText) {
-                const cuisineKeywords = {
-                    'South Indian': ['idli', 'dosa', 'sambar', 'rasam', 'kootu', 'poriyal', 'uttapam', 'vada'],
-                    'North Indian': ['roti', 'naan', 'dal', 'paneer', 'chole', 'rajma', 'aloo'],
-                    'Regional Indian': ['biryani', 'curry', 'pulao', 'paratha'],
-                    'Continental': ['sandwich', 'bread', 'omelette', 'pasta', 'noodles'],
-                    'Healthy': ['salad', 'fruits', 'juice', 'smoothie'],
-                    'Comfort Food': ['rice', 'khichdi', 'porridge']
-                };
-
-                const lowercaseText = mealText.toLowerCase();
-                for (const [cuisine, keywords] of Object.entries(cuisineKeywords)) {
-                    if (keywords.some(keyword => lowercaseText.includes(keyword))) {
-                        return cuisine;
-                    }
-                }
-                return 'Other';
-            }
-
-            generateSmartRecommendations(patterns) {
-                const recommendations = [];
-
-                // Variety recommendations
-                const leastUsedCuisines = Object.entries(patterns.cuisineTypes)
-                    .sort(([,a], [,b]) => a - b)
-                    .slice(0, 2);
-
-                if (leastUsedCuisines.length > 0) {
-                    recommendations.push({
-                        category: '🌍 Try Something New',
-                        suggestions: this.getSuggestionsByCuisine(leastUsedCuisines.map(([cuisine]) => cuisine))
-                    });
-                }
-
-                // Balance recommendations
-                const avgMealsPerType = this.mealHistory.length / 3;
-                Object.entries(patterns.mealTypeDistribution).forEach(([type, count]) => {
-                    if (count < avgMealsPerType * 0.7) {
-                        recommendations.push({
-                            category: `⚖️ More ${type} Ideas`,
-                            suggestions: this.getSuggestionsByMealType(type)
-                        });
-                    }
-                });
-
-                // Seasonal recommendations
-                recommendations.push({
-                    category: '🍂 Seasonal Favorites',
-                    suggestions: this.getSeasonalSuggestions()
-                });
-
-                // Popular recommendations based on frequency
-                const popularMeals = Object.entries(patterns.mealFrequency)
-                    .sort(([,a], [,b]) => b - a)
-                    .slice(0, 3);
-
-                if (popularMeals.length > 0) {
-                    recommendations.push({
-                        category: '❤️ Family Favorites Variations',
-                        suggestions: popularMeals.map(([meal]) => this.getVariation(meal))
-                    });
-                }
-
-                return recommendations;
-            }
-
-            getSuggestionsByCuisine(cuisines) {
-                const suggestions = {
-                    'South Indian': ['Masala Dosa', 'Medu Vada', 'Lemon Rice', 'Curd Rice'],
-                    'North Indian': ['Chole Bhature', 'Rajma Chawal', 'Palak Paneer', 'Aloo Paratha'],
-                    'Regional Indian': ['Vegetable Biryani', 'Fish Curry', 'Chicken Curry', 'Mixed Vegetable Curry'],
-                    'Continental': ['Club Sandwich', 'Pasta Primavera', 'Stir-fried Noodles', 'French Toast'],
-                    'Healthy': ['Quinoa Salad', 'Fruit Bowl', 'Green Smoothie', 'Vegetable Soup'],
-                    'Comfort Food': ['Khichdi', 'Vegetable Rice', 'Tomato Rice', 'Coconut Rice']
-                };
-
-                const result = [];
-                cuisines.forEach(cuisine => {
-                    if (suggestions[cuisine]) {
-                        result.push(...suggestions[cuisine].slice(0, 2));
-                    }
-                });
-
-                return result.slice(0, 4);
-            }
-
-            getSuggestionsByMealType(mealType) {
-                const suggestions = {
-                    'Breakfast': ['Poha', 'Upma', 'Idli Sambar', 'Masala Dosa'],
-                    'Lunch': ['Dal Rice', 'Vegetable Pulao', 'Sambar Rice', 'Curd Rice'],
-                    'Dinner': ['Roti Sabzi', 'Fried Rice', 'Pasta', 'Soup with Bread']
-                };
-
-                return suggestions[mealType] || [];
-            }
-
-            getSeasonalSuggestions() {
-                const month = new Date().getMonth();
-                const seasonalMeals = {
+            <div class="tab-nav
