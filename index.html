@@ -1,1183 +1,9 @@
-<div class="tab-nav">
-                <button class="tab-btn active" onclick="switchTab('planner')">
-                    📅 Meal Planner
-                </button>
-                <button class="tab-btn" onclick="switchTab('shopping')">
-                    🛒 Shopping List (<span id="shoppingCount">0</span>)
-                </button>
-            </div>
-
-            <div class="tab-content">
-                <!-- Meal Planner Tab -->
-                <div id="plannerTab">
-                    <div style="overflow-x: auto;">
-                        <table class="meal-table" id="mealTable">
-                            <thead>
-                                <tr>
-                                    <th class="meal-type">Day</th>
-                                    <th class="day-header" id="day-header-0">
-                                        <div class="day-actions">
-                                            <button class="day-action-btn" onclick="copyDay(0)" title="Copy Day">📋</button>
-                                            <button class="day-action-btn" onclick="clearDay(0)" title="Clear Day">🗑️</button>
-                                        </div>
-                                        <div class="day-content">
-                                            <div style="color: #e53e3e; font-weight: bold; font-size: 14px;">Monday</div>
-                                            <div style="font-size: 12px; color: #718096; font-weight: normal; margin-top: 2px;">
-                                                Jun 30
-                                            </div>
-                                        </div>
-                                    </th>
-                                    <th class="day-header" id="day-header-1">
-                                        <div class="day-actions">
-                                            <button class="day-action-btn" onclick="copyDay(1)" title="Copy Day">📋</button>
-                                            <button class="day-action-btn" onclick="clearDay(1)" title="Clear Day">🗑️</button>
-                                        </div>
-                                        <div class="day-content">
-                                            <div style="color: #e53e3e; font-weight: bold; font-size: 14px;">Tuesday</div>
-                                            <div style="font-size: 12px; color: #718096; font-weight: normal; margin-top: 2px;">
-                                                Jul 1
-                                            </div>
-                                        </div>
-                                    </th>
-                                    <th class="day-header" id="day-header-2">
-                                        <div class="day-actions">
-                                            <button class="day-action-btn" onclick="copyDay(2)" title="Copy Day">📋</button>
-                                            <button class="day-action-btn" onclick="clearDay(2)" title="Clear Day">🗑️</button>
-                                        </div>
-                                        <div class="day-content">
-                                            <div style="color: #e53e3e; font-weight: bold; font-size: 14px;">Wednesday</div>
-                                            <div style="font-size: 12px; color: #718096; font-weight: normal; margin-top: 2px;">
-                                                Jul 2
-                                            </div>
-                                        </div>
-                                    </th>
-                                    <th class="day-header" id="day-header-3">
-                                        <div class="day-actions">
-                                            <button class="day-action-btn" onclick="copyDay(3)" title="Copy Day">📋</button>
-                                            <button class="day-action-btn" onclick="clearDay(3)" title="Clear Day">🗑️</button>
-                                        </div>
-                                        <div class="day-content">
-                                            <div style="color: #e53e3e; font-weight: bold; font-size: 14px;">Thursday</div>
-                                            <div style="font-size: 12px; color: #718096; font-weight: normal; margin-top: 2px;">
-                                                Jul 3
-                                            </div>
-                                        </div>
-                                    </th>
-                                    <th class="day-header" id="day-header-4">
-                                        <div class="day-actions">
-                                            <button class="day-action-btn" onclick="copyDay(4)" title="Copy Day">📋</button>
-                                            <button class="day-action-btn" onclick="clearDay(4)" title="Clear Day">🗑️</button>
-                                        </div>
-                                        <div class="day-content">
-                                            <div style="color: #e53e3e; font-weight: bold; font-size: 14px;">Friday</div>
-                                            <div style="font-size: 12px; color: #718096; font-weight: normal; margin-top: 2px;">
-                                                Jul 4
-                                            </div>
-                                        </div>
-                                    </th>
-                                    <th class="day-header" id="day-header-5">
-                                        <div class="day-actions">
-                                            <button class="day-action-btn" onclick="copyDay(5)" title="Copy Day">📋</button>
-                                            <button class="day-action-btn" onclick="clearDay(5)" title="Clear Day">🗑️</button>
-                                        </div>
-                                        <div class="day-content">
-                                            <div style="color: #e53e3e; font-weight: bold; font-size: 14px;">Saturday</div>
-                                            <div style="font-size: 12px; color: #718096; font-weight: normal; margin-top: 2px;">
-                                                Jul 5
-                                            </div>
-                                        </div>
-                                    </th>
-                                    <th class="day-header" id="day-header-6">
-                                        <div class="day-actions">
-                                            <button class="day-action-btn" onclick="copyDay(6)" title="Copy Day">📋</button>
-                                            <button class="day-action-btn" onclick="clearDay(6)" title="Clear Day">🗑️</button>
-                                        </div>
-                                        <div class="day-content">
-                                            <div style="color: #e53e3e; font-weight: bold; font-size: 14px;">Sunday</div>
-                                            <div style="font-size: 12px; color: #718096; font-weight: normal; margin-top: 2px;">
-                                                Jul 6
-                                            </div>
-                                        </div>
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody id="mealTableBody">
-                                <!-- Generated by JavaScript -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- Shopping List Tab -->
-                <div id="shoppingTab" style="display: none;">
-                    <div class="shopping-section">
-                        <div class="add-item">
-                            <h3>Add to Shopping List</h3>
-                            <div class="add-item-form">
-                                <input type="text" id="newIngredient" placeholder="Enter ingredient or item..." onkeypress="handleIngredientKeyPress(event)">
-                                <button class="add-btn" onclick="addToShoppingList()">+ Add</button>
-                            </div>
-                        </div>
-
-                        <div class="shopping-list">
-                            <div class="shopping-controls">
-                                <button class="nav-btn secondary" onclick="toggleSelectMode()">📌 Select Mode</button>
-                                <button class="nav-btn" onclick="deleteSelectedItems()" id="deleteSelectedBtn" style="display: none;">🗑️ Delete Selected</button>
-                                <button class="nav-btn success" onclick="markSelectedCompleted()" id="markSelectedBtn" style="display: none;">✅ Mark Completed</button>
-                            </div>
-                            
-                            <h3>Shopping List</h3>
-                            <div id="shoppingItems">
-                                <!-- Generated by JavaScript -->
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Tips -->
-        <div class="tips">
-            <h3>🍳 Tips for Family Meal Planning</h3>
-            <div class="tips-grid">
-                <div class="tip-card orange">
-                    <strong>Smart Shopping:</strong> Click "Generate Shopping List" to extract ingredients from your meals automatically.
-                </div>
-                <div class="tip-card green">
-                    <strong>Copy & Paste:</strong> Use the 📋 buttons to copy entire days or individual meals between weeks.
-                </div>
-                <div class="tip-card blue">
-                    <strong>Family Sync:</strong> Changes appear instantly for all family members. Plan meals together in real-time!
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Copy Modal -->
-    <div id="copyModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title">Copy from Previous Weeks</h2>
-                <button class="close-btn" onclick="closeCopyModal()">×</button>
-            </div>
-            
-            <div class="week-selector">
-                <p style="margin-bottom: 15px; color: #718096;">Select what to copy:</p>
-                <div class="week-list" id="previousWeeksList">
-                    <!-- Generated by JavaScript -->
-                </div>
-            </div>
-
-            <div class="modal-actions">
-                <button class="nav-btn" onclick="closeCopyModal()">Cancel</button>
-                <button class="nav-btn success" onclick="copySelectedItems()">📋 Copy Selected</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Firebase Configuration -->
-    <script src="firebase-config.js"></script>
-    
-    <!-- Your Original JavaScript - Keep all existing functionality -->
-    <script>
-        // Your existing global variables
-        let currentWeek = new Date();
-        let meals = {};
-        let shoppingList = [];
-        let editingCell = null;
-        let selectedItemsToCopy = [];
-        let isSelectMode = false;
-        let selectedShoppingItems = new Set();
-        let draggedMeal = null;
-        let draggedFromDay = null;
-        let draggedFromMealType = null;
-
-        const weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-        const mealTypes = ['Breakfast', 'Lunch', 'Dinner'];
-
-        // Enhanced save function with Firebase sync
-        function saveData() {
-            localStorage.setItem('foodPlannerMeals', JSON.stringify(meals));
-            localStorage.setItem('foodPlannerShopping', JSON.stringify(shoppingList));
-            localStorage.setItem('foodPlannerCurrentWeek', currentWeek.toISOString());
-            
-            // Sync to Firebase if user is signed in
-            if (typeof syncToFirebase === 'function') {
-                syncToFirebase();
-            }
-        }
-
-        // Firebase sign-in handler
-        document.addEventListener('DOMContentLoaded', () => {
-            // Handle Google sign-in button
-            document.getElementById('google-signin').addEventListener('click', () => {
-                if (typeof firebase !== 'undefined' && firebase.auth) {
-                    const provider = new firebase.auth.GoogleAuthProvider();
-                    firebase.auth().signInWithPopup(provider)
-                        .then((result) => {
-                            console.log('✅ Sign-in successful!');
-                        })
-                        .catch((error) => {
-                            console.error('❌ Sign-in error:', error);
-                            alert('Sign-in failed. Please try again.');
-                        });
-                } else {
-                    alert('Firebase not configured. Please check firebase-config.js');
-                }
-            });
-
-            // Handle sign-out button
-            document.getElementById('sign-out-btn').addEventListener('click', () => {
-                if (typeof firebase !== 'undefined' && firebase.auth) {
-                    firebase.auth().signOut();
-                }
-            });
-
-            // Initialize app if no Firebase or fallback
-            setTimeout(() => {
-                if (!firebase || !firebase.auth || !firebase.auth().currentUser) {
-                    console.log('🔄 Fallback: Loading local version');
-                    // Show app without Firebase features
-                    document.getElementById('loading-screen').style.display = 'none';
-                    document.getElementById('firebase-user-info').style.display = 'none';
-                    document.getElementById('app-container').style.display = 'block';
-                    init();
-                }
-            }, 8000); // 8 second timeout for Firebase
-        });
-
-        // Your original functions - keep all of them exactly as they were
-        const ingredientPatterns = {
-            'mutton biryani': ['mutton', 'rice', 'onions', 'yogurt'],
-            'chicken curry': ['chicken', 'onions', 'tomatoes', 'coconut'],
-            'fish fry': ['fish', 'oil', 'spices'],
-            'egg curry': ['eggs', 'onions', 'tomatoes'],
-            'dal rice': ['dal', 'rice'],
-            'curd rice': ['rice', 'curd'],
-            'sambar rice': ['rice', 'sambar', 'dal'],
-            'rasam rice': ['rice', 'tomatoes', 'tamarind'],
-            'lemon rice': ['rice', 'lemon'],
-            'coconut rice': ['rice', 'coconut'],
-            'vegetable biryani': ['rice', 'mixed vegetables', 'onions'],
-            'paneer curry': ['paneer', 'onions', 'tomatoes'],
-            'aloo gobi': ['potatoes', 'cauliflower'],
-            'palak paneer': ['spinach', 'paneer'],
-            'rajma chawal': ['rajma', 'rice'],
-            'chole bhature': ['chickpeas', 'flour'],
-            'masala dosa': ['rice', 'urad dal', 'potatoes'],
-            'idli sambar': ['rice', 'urad dal', 'dal'],
-            'upma': ['semolina', 'vegetables'],
-            'poha': ['flattened rice', 'onions', 'potatoes']
-        };
-
-        function loadData() {
-            const savedMeals = localStorage.getItem('foodPlannerMeals');
-            const savedShopping = localStorage.getItem('foodPlannerShopping');
-            const savedWeek = localStorage.getItem('foodPlannerCurrentWeek');
-
-            if (savedMeals) {
-                meals = JSON.parse(savedMeals);
-            }
-            if (savedShopping) {
-                shoppingList = JSON.parse(savedShopping);
-            }
-            if (savedWeek) {
-                currentWeek = new Date(savedWeek);
-            }
-
-            if (Object.keys(meals).length === 0) {
-                addSampleData();
-            }
-        }
-
-        function addSampleData() {
-            const weekDates = getWeekDates(currentWeek);
-            const sampleMeals = {
-                [`${weekDays[0]}-${weekDates[0].getDate()}-${weekDates[0].getMonth()}-${weekDates[0].getFullYear()}`]: {
-                    Breakfast: 'Idiyappam + coconut milk',
-                    Lunch: 'Garlic Rice and Egg roast',
-                    Dinner: 'Sandwich'
-                },
-                [`${weekDays[1]}-${weekDates[1].getDate()}-${weekDates[1].getMonth()}-${weekDates[1].getFullYear()}`]: {
-                    Breakfast: 'Bread Omelette',
-                    Lunch: 'Manathakkali Kootu + Rice + Sambhar',
-                    Dinner: 'Pasta'
-                },
-                [`${weekDays[2]}-${weekDates[2].getDate()}-${weekDates[2].getMonth()}-${weekDates[2].getFullYear()}`]: {
-                    Breakfast: 'Idli + Mutton Curry',
-                    Lunch: 'Mutton Biryani',
-                    Dinner: 'Noodles'
-                }
-            };
-            meals = { ...meals, ...sampleMeals };
-            saveData();
-        }
-
-        function getWeekDates(date) {
-            const week = [];
-            const startDate = new Date(date);
-            const day = startDate.getDay();
-            const diff = startDate.getDate() - day + (day === 0 ? -6 : 1);
-            startDate.setDate(diff);
-            
-            for (let i = 0; i < 7; i++) {
-                const currentDate = new Date(startDate);
-                currentDate.setDate(startDate.getDate() + i);
-                week.push(currentDate);
-            }
-            return week;
-        }
-
-        function getDateKey(date, dayIndex) {
-            return `${weekDays[dayIndex]}-${date.getDate()}-${date.getMonth()}-${date.getFullYear()}`;
-        }
-
-        function updateWeekDisplay() {
-            const weekDates = getWeekDates(currentWeek);
-            const start = weekDates[0];
-            const end = weekDates[6];
-            const range = `${start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${end.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`;
-            document.getElementById('weekRange').textContent = range;
-        }
-
-        function goToPreviousWeek() {
-            currentWeek.setDate(currentWeek.getDate() - 7);
-            updateWeekDisplay();
-            generateMealTable();
-            saveData();
-        }
-
-        function goToNextWeek() {
-            currentWeek.setDate(currentWeek.getDate() + 7);
-            updateWeekDisplay();
-            generateMealTable();
-            saveData();
-        }
-
-        function goToCurrentWeek() {
-            currentWeek = new Date();
-            updateWeekDisplay();
-            generateMealTable();
-            saveData();
-        }
-
-        function generateMealTable() {
-            const weekDates = getWeekDates(currentWeek);
-            const tbody = document.getElementById('mealTableBody');
-            tbody.innerHTML = '';
-
-            weekDays.forEach((day, index) => {
-                const header = document.getElementById(`day-header-${index}`);
-                if (header) {
-                    header.innerHTML = `
-                        <div class="day-actions">
-                            <button class="day-action-btn" onclick="copyDay(${index})" title="Copy Day">📋</button>
-                            <button class="day-action-btn" onclick="clearDay(${index})" title="Clear Day">🗑️</button>
-                        </div>
-                        <div class="day-content">
-                            <div style="color: #e53e3e; font-weight: bold; font-size: 14px;">${day}</div>
-                            <div style="font-size: 12px; color: #718096; font-weight: normal; margin-top: 2px;">
-                                ${weekDates[index].toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                            </div>
-                        </div>
-                    `;
-                }
-            });
-
-            weekDates.forEach((date, index) => {
-                const dateKey = getDateKey(date, index);
-                if (!meals[dateKey]) {
-                    meals[dateKey] = {
-                        Breakfast: '',
-                        Lunch: '',
-                        Dinner: ''
-                    };
-                }
-            });
-
-            mealTypes.forEach(mealType => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td class="meal-type" style="background: #fff5f5; color: #e53e3e; font-weight: 600;">
-                        ${mealType}
-                    </td>
-                `;
-
-                weekDays.forEach((day, index) => {
-                    const dateKey = getDateKey(weekDates[index], index);
-                    const mealValue = meals[dateKey]?.[mealType] || '';
-
-                    const cell = document.createElement('td');
-                    cell.className = 'meal-cell';
-                    cell.draggable = true;
-                    cell.dataset.day = index;
-                    cell.dataset.mealType = mealType;
-                    cell.onclick = () => handleCellClick(dateKey, mealType, cell);
-                    
-                    cell.innerHTML = `
-                        <div class="meal-text" style="min-height: 44px; padding: 8px; word-wrap: break-word; white-space: pre-wrap;">
-                            ${mealValue || '<span class="placeholder">Click to add meal</span>'}
-                        </div>
-                    `;
-
-                    row.appendChild(cell);
-                });
-
-                tbody.appendChild(row);
-            });
-        }
-
-        function handleCellClick(dateKey, mealType, cell) {
-            if (editingCell) return;
-
-            editingCell = { dateKey, mealType, cell };
-            const currentValue = meals[dateKey]?.[mealType] || '';
-            
-            cell.innerHTML = `
-                <textarea class="meal-input" 
-                    onblur="saveMeal()"
-                    onkeydown="handleKeyDown(event)"
-                    placeholder="Add meal..."
-                >${currentValue}</textarea>
-            `;
-            
-            const textarea = cell.querySelector('textarea');
-            textarea.focus();
-            textarea.select();
-        }
-
-        function saveMeal() {
-            if (!editingCell) return;
-
-            const { dateKey, mealType, cell } = editingCell;
-            const textarea = cell.querySelector('textarea');
-            const value = textarea.value.trim();
-
-            if (!meals[dateKey]) {
-                meals[dateKey] = {};
-            }
-            meals[dateKey][mealType] = value;
-
-            cell.innerHTML = `
-                <div class="meal-text" style="min-height: 44px; padding: 8px; word-wrap: break-word; white-space: pre-wrap;">
-                    ${value || '<span class="placeholder">Click to add meal</span>'}
-                </div>
-            `;
-
-            editingCell = null;
-            saveData();
-        }
-
-        function handleKeyDown(event) {
-            if (event.key === 'Enter' && !event.shiftKey) {
-                event.preventDefault();
-                saveMeal();
-            } else if (event.key === 'Escape') {
-                cancelEdit();
-            }
-        }
-
-        function cancelEdit() {
-            if (!editingCell) return;
-
-            const { dateKey, mealType, cell } = editingCell;
-            const currentValue = meals[dateKey]?.[mealType] || '';
-
-            cell.innerHTML = `
-                <div class="meal-text" style="min-height: 44px; padding: 8px; word-wrap: break-word; white-space: pre-wrap;">
-                    ${currentValue || '<span class="placeholder">Click to add meal</span>'}
-                </div>
-            `;
-
-            editingCell = null;
-        }
-
-        // Initialize app
-        function init() {
-            loadData();
-            updateWeekDisplay();
-            generateMealTable();
-            updateShoppingDisplay();
-            setupDragAndDrop();
-        }
-
-        // Keep all your other existing functions...
-        function setupDragAndDrop() {
-            document.addEventListener('dragstart', handleDragStart);
-            document.addEventListener('dragover', handleDragOver);
-            document.addEventListener('drop', handleDrop);
-            document.addEventListener('dragend', handleDragEnd);
-        }
-
-        function handleDragStart(e) {
-            if (!e.target.classList.contains('meal-cell')) return;
-            
-            const dayIndex = e.target.dataset.day;
-            const mealType = e.target.dataset.mealType;
-            const weekDates = getWeekDates(currentWeek);
-            const dateKey = getDateKey(weekDates[dayIndex], parseInt(dayIndex));
-            
-            draggedMeal = meals[dateKey]?.[mealType] || '';
-            draggedFromDay = dayIndex;
-            draggedFromMealType = mealType;
-            
-            e.target.classList.add('dragging');
-            e.dataTransfer.effectAllowed = 'move';
-        }
-
-        function handleDragOver(e) {
-            if (!e.target.classList.contains('meal-cell')) return;
-            e.preventDefault();
-            e.dataTransfer.dropEffect = 'move';
-            e.target.classList.add('drop-target');
-        }
-
-        function handleDrop(e) {
-            if (!e.target.classList.contains('meal-cell')) return;
-            e.preventDefault();
-            
-            const targetDay = e.target.dataset.day;
-            const targetMealType = e.target.dataset.mealType;
-            const weekDates = getWeekDates(currentWeek);
-            
-            if (draggedMeal && draggedFromDay !== null) {
-                const sourceKey = getDateKey(weekDates[draggedFromDay], parseInt(draggedFromDay));
-                if (meals[sourceKey]) {
-                    meals[sourceKey][draggedFromMealType] = '';
-                }
-                
-                const targetKey = getDateKey(weekDates[targetDay], parseInt(targetDay));
-                if (!meals[targetKey]) {
-                    meals[targetKey] = {};
-                }
-                meals[targetKey][targetMealType] = draggedMeal;
-                
-                saveData();
-                generateMealTable();
-            }
-            
-            e.target.classList.remove('drop-target');
-        }
-
-        function handleDragEnd(e) {
-            if (e.target.classList.contains('meal-cell')) {
-                e.target.classList.remove('dragging');
-            }
-            document.querySelectorAll('.meal-cell').forEach(cell => {
-                cell.classList.remove('drop-target');
-            });
-            
-            draggedMeal = null;
-            draggedFromDay = null;
-            draggedFromMealType = null;
-        }
-
-        function copyDay(dayIndex) {
-            const weekDates = getWeekDates(currentWeek);
-            const dateKey = getDateKey(weekDates[dayIndex], dayIndex);
-            const dayMeals = meals[dateKey];
-            
-            if (!dayMeals || Object.values(dayMeals).every(meal => !meal || meal.trim() === '')) {
-                alert('No meals found for this day to copy!');
-                return;
-            }
-            
-            localStorage.setItem('copiedDay', JSON.stringify(dayMeals));
-            localStorage.setItem('copiedDayName', weekDays[dayIndex]);
-            
-            alert(`📋 Copied ${weekDays[dayIndex]}'s meals!`);
-        }
-
-        function clearDay(dayIndex) {
-            if (confirm(`Clear all meals for ${weekDays[dayIndex]}?`)) {
-                const weekDates = getWeekDates(currentWeek);
-                const dateKey = getDateKey(weekDates[dayIndex], dayIndex);
-                
-                meals[dateKey] = {
-                    Breakfast: '',
-                    Lunch: '',
-                    Dinner: ''
-                };
-                
-                saveData();
-                generateMealTable();
-            }
-        }
-
-        function generateShoppingList() {
-            const weekDates = getWeekDates(currentWeek);
-            const allIngredients = [];
-            
-            weekDates.forEach((date, index) => {
-                const dateKey = getDateKey(date, index);
-                if (meals[dateKey]) {
-                    mealTypes.forEach(mealType => {
-                        const meal = meals[dateKey][mealType];
-                        if (meal) {
-                            const ingredients = extractIngredientsFromMeal(meal);
-                            allIngredients.push(...ingredients);
-                        }
-                    });
-                }
-            });
-            
-            const uniqueIngredients = [...new Set(allIngredients)];
-            let addedCount = 0;
-            
-            uniqueIngredients.forEach(ingredient => {
-                if (!shoppingList.find(item => item.name.toLowerCase() === ingredient.toLowerCase())) {
-                    shoppingList.push({
-                        id: Date.now() + Math.random(),
-                        name: ingredient.charAt(0).toUpperCase() + ingredient.slice(1),
-                        completed: false
-                    });
-                    addedCount++;
-                }
-            });
-            
-            updateShoppingDisplay();
-            saveData();
-            
-            if (addedCount > 0) {
-                alert(`✅ Added ${addedCount} ingredients to shopping list!`);
-                switchTab('shopping');
-            } else {
-                alert('ℹ️ No new ingredients found to add.');
-            }
-        }
-
-        function extractIngredientsFromMeal(mealText) {
-            if (!mealText || mealText.trim() === '' || mealText === '-') return [];
-            
-            const meal = mealText.toLowerCase().trim();
-            const ingredients = [];
-            
-            for (const [dish, dishIngredients] of Object.entries(ingredientPatterns)) {
-                if (meal.includes(dish)) {
-                    ingredients.push(...dishIngredients);
-                }
-            }
-            
-            const parts = meal.split(/[+,&\s]+/).map(part => part.trim()).filter(part => part.length > 2);
-            
-            parts.forEach(part => {
-                const skipWords = ['with', 'and', 'or', 'the', 'a', 'an', 'in', 'on', 'at', 'to', 'for', 'of', 'by'];
-                if (!skipWords.includes(part) && !ingredients.includes(part)) {
-                    if (part.includes('curry')) {
-                        const base = part.replace('curry', '').trim();
-                        if (base) ingredients.push(base);
-                    } else if (part.includes('fry')) {
-                        const base = part.replace('fry', '').trim();
-                        if (base) ingredients.push(base);
-                    } else if (part.includes('roast')) {
-                        const base = part.replace('roast', '').trim();
-                        if (base) ingredients.push(base);
-                    } else {
-                        ingredients.push(part);
-                    }
-                }
-            });
-            
-            return [...new Set(ingredients)];
-        }
-
-        function clearShoppingList() {
-            if (confirm('Clear all items from shopping list?')) {
-                shoppingList = [];
-                updateShoppingDisplay();
-                saveData();
-            }
-        }
-
-        function addToShoppingList() {
-            const input = document.getElementById('newIngredient');
-            const ingredient = input.value.trim();
-            
-            if (ingredient && !shoppingList.find(item => item.name.toLowerCase() === ingredient.toLowerCase())) {
-                shoppingList.push({
-                    id: Date.now(),
-                    name: ingredient,
-                    completed: false
-                });
-                input.value = '';
-                updateShoppingDisplay();
-                saveData();
-            }
-        }
-
-        function handleIngredientKeyPress(event) {
-            if (event.key === 'Enter') {
-                addToShoppingList();
-            }
-        }
-
-        function toggleShoppingItem(id) {
-            const item = shoppingList.find(item => item.id === id);
-            if (item) {
-                item.completed = !item.completed;
-                updateShoppingDisplay();
-                saveData();
-            }
-        }
-
-        function removeShoppingItem(id) {
-            shoppingList = shoppingList.filter(item => item.id !== id);
-            selectedShoppingItems.delete(id);
-            updateShoppingDisplay();
-            saveData();
-        }
-
-        function toggleSelectMode() {
-            isSelectMode = !isSelectMode;
-            selectedShoppingItems.clear();
-            updateShoppingDisplay();
-            
-            const btn = document.querySelector('[onclick="toggleSelectMode()"]');
-            btn.textContent = isSelectMode ? '❌ Exit Select' : '📌 Select Mode';
-            
-            document.getElementById('deleteSelectedBtn').style.display = isSelectMode ? 'inline-block' : 'none';
-            document.getElementById('markSelectedBtn').style.display = isSelectMode ? 'inline-block' : 'none';
-        }
-
-        function toggleItemSelection(id) {
-            if (selectedShoppingItems.has(id)) {
-                selectedShoppingItems.delete(id);
-            } else {
-                selectedShoppingItems.add(id);
-            }
-            updateShoppingDisplay();
-        }
-
-        function deleteSelectedItems() {
-            if (selectedShoppingItems.size === 0) {
-                alert('No items selected');
-                return;
-            }
-            
-            if (confirm(`Delete ${selectedShoppingItems.size} selected items?`)) {
-                shoppingList = shoppingList.filter(item => !selectedShoppingItems.has(item.id));
-                selectedShoppingItems.clear();
-                updateShoppingDisplay();
-                saveData();
-            }
-        }
-
-        function markSelectedCompleted() {
-            if (selectedShoppingItems.size === 0) {
-                alert('No items selected');
-                return;
-            }
-            
-            shoppingList.forEach(item => {
-                if (selectedShoppingItems.has(item.id)) {
-                    item.completed = true;
-                }
-            });
-            
-            selectedShoppingItems.clear();
-            updateShoppingDisplay();
-            saveData();
-        }
-
-        function updateShoppingDisplay() {
-            const container = document.getElementById('shoppingItems');
-            const countElement = document.getElementById('shoppingCount');
-            
-            countElement.textContent = shoppingList.length;
-
-            if (shoppingList.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <div style="font-size: 3rem; margin-bottom: 15px;">🛒</div>
-                        <p>Your shopping list is empty</p>
-                        <p style="font-size: 12px; color: #a0aec0;">Add items manually or generate from your meal plan</p>
-                    </div>
-                `;
-                return;
-            }
-
-            container.innerHTML = shoppingList.map(item => `
-                <div class="shopping-item ${item.completed ? 'completed' : ''} ${selectedShoppingItems.has(item.id) ? 'selected' : ''}" data-item-id="${item.id}">
-                    ${isSelectMode ? `
-                        <div class="shopping-select" onclick="toggleItemSelection(${item.id})">
-                            ${selectedShoppingItems.has(item.id) ? '✓' : ''}
-                        </div>
-                    ` : ''}
-                    <div class="shopping-checkbox" onclick="toggleShoppingItem(${item.id})">
-                        ${item.completed ? '✓' : ''}
-                    </div>
-                    <div class="shopping-text ${item.completed ? 'completed' : ''}" onclick="editShoppingItem(${item.id})">
-                        ${item.name}
-                    </div>
-                    <div class="shopping-actions">
-                        <button class="shopping-btn" onclick="editShoppingItem(${item.id})" title="Edit">✏️</button>
-                        <button class="shopping-btn" onclick="removeShoppingItem(${item.id})" title="Delete">🗑️</button>
-                    </div>
-                </div>
-            `).join('');
-
-            const completed = shoppingList.filter(item => item.completed).length;
-            const selected = selectedShoppingItems.size;
-            
-            let summaryText = `${completed} of ${shoppingList.length} items completed`;
-            if (isSelectMode && selected > 0) {
-                summaryText += ` • ${selected} selected`;
-            }
-            
-            container.innerHTML += `
-                <div class="summary">
-                    <strong>${summaryText}</strong>
-                </div>
-            `;
-        }
-
-        function editShoppingItem(id) {
-            const item = shoppingList.find(item => item.id === id);
-            const element = document.querySelector(`[data-item-id="${id}"] .shopping-text`);
-            
-            if (item && element) {
-                const currentText = item.name;
-                element.innerHTML = `<input type="text" class="shopping-text editing" value="${currentText}" onblur="saveShoppingEdit(${id})" onkeydown="handleShoppingEditKeyDown(event, ${id})">`;
-                element.querySelector('input').focus();
-            }
-        }
-
-        function saveShoppingEdit(id) {
-            const item = shoppingList.find(item => item.id === id);
-            const input = document.querySelector(`[data-item-id="${id}"] .shopping-text input`);
-            
-            if (item && input) {
-                const newValue = input.value.trim();
-                if (newValue) {
-                    item.name = newValue;
-                    saveData();
-                }
-                updateShoppingDisplay();
-            }
-        }
-
-        function handleShoppingEditKeyDown(event, id) {
-            if (event.key === 'Enter') {
-                saveShoppingEdit(id);
-            } else if (event.key === 'Escape') {
-                updateShoppingDisplay();
-            }
-        }
-
-        function openCopyModal() {
-            generateCopyOptions();
-            document.getElementById('copyModal').classList.add('show');
-        }
-
-        function closeCopyModal() {
-            document.getElementById('copyModal').classList.remove('show');
-            selectedItemsToCopy = [];
-        }
-
-        function generateCopyOptions() {
-            const container = document.getElementById('previousWeeksList');
-            container.innerHTML = '';
-
-            const weeksWithData = [];
-            const currentWeekDates = getWeekDates(currentWeek);
-            const currentWeekStart = currentWeekDates[0];
-
-            for (let weeksBack = 1; weeksBack <= 12; weeksBack++) {
-                const weekDate = new Date(currentWeekStart);
-                weekDate.setDate(weekDate.getDate() - (weeksBack * 7));
-                const weekDates = getWeekDates(weekDate);
-
-                let weekMeals = [];
-                weekDates.forEach((date, index) => {
-                    const dateKey = getDateKey(date, index);
-                    if (meals[dateKey]) {
-                        mealTypes.forEach(mealType => {
-                            if (meals[dateKey][mealType] && meals[dateKey][mealType].trim() !== '' && meals[dateKey][mealType] !== '-') {
-                                weekMeals.push({
-                                    day: weekDays[index],
-                                    mealType,
-                                    content: meals[dateKey][mealType],
-                                    dateKey,
-                                    dayIndex: index
-                                });
-                            }
-                        });
-                    }
-                });
-
-                if (weekMeals.length > 0) {
-                    weeksWithData.push({
-                        date: weekDate,
-                        weekDates: weekDates,
-                        meals: weekMeals
-                    });
-                }
-            }
-
-            if (weeksWithData.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state" style="padding: 30px; text-align: center;">
-                        <div style="font-size: 2rem; margin-bottom: 10px;">📅</div>
-                        <p>No previous weeks with meal data found</p>
-                        <p style="font-size: 12px; color: #a0aec0;">Plan some meals first, then you can copy them to future weeks</p>
-                    </div>
-                `;
-                return;
-            }
-
-            weeksWithData.forEach(week => {
-                const weekItem = document.createElement('div');
-                weekItem.className = 'week-item';
-
-                const start = week.weekDates[0];
-                const end = week.weekDates[6];
-                const weekRange = `${start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${end.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`;
-
-                weekItem.innerHTML = `
-                    <div>
-                        <div class="week-date">${weekRange}</div>
-                        <div style="font-size: 12px; color: #718096; margin-top: 2px;">
-                            ${getWeekAgo(week.date)} ago • ${week.meals.length} meals
-                        </div>
-                    </div>
-                `;
-
-                const mealsContainer = document.createElement('div');
-                mealsContainer.className = 'day-meals-container';
-                
-                week.meals.forEach(meal => {
-                    const mealItem = document.createElement('div');
-                    mealItem.className = 'day-meal-item';
-                    mealItem.onclick = () => toggleMealSelection(meal, mealItem);
-                    
-                    mealItem.innerHTML = `
-                        <div class="meal-info">
-                            <div class="meal-type-label">${meal.day} - ${meal.mealType}</div>
-                            <div class="meal-content">${meal.content}</div>
-                        </div>
-                    `;
-                    
-                    mealsContainer.appendChild(mealItem);
-                });
-
-                weekItem.appendChild(mealsContainer);
-                container.appendChild(weekItem);
-            });
-        }
-
-        function toggleMealSelection(meal, element) {
-            const index = selectedItemsToCopy.findIndex(item => 
-                item.dateKey === meal.dateKey && item.mealType === meal.mealType
-            );
-            
-            if (index > -1) {
-                selectedItemsToCopy.splice(index, 1);
-                element.classList.remove('selected');
-            } else {
-                selectedItemsToCopy.push(meal);
-                element.classList.add('selected');
-            }
-        }
-
-        function copySelectedItems() {
-            if (selectedItemsToCopy.length === 0) {
-                alert('Please select meals to copy');
-                return;
-            }
-
-            const currentWeekDates = getWeekDates(currentWeek);
-            let copiedCount = 0;
-
-            selectedItemsToCopy.forEach(meal => {
-                const targetDate = currentWeekDates[meal.dayIndex];
-                const targetKey = getDateKey(targetDate, meal.dayIndex);
-                
-                if (!meals[targetKey]) {
-                    meals[targetKey] = {};
-                }
-                
-                meals[targetKey][meal.mealType] = meal.content;
-                copiedCount++;
-            });
-
-            generateMealTable();
-            saveData();
-            closeCopyModal();
-
-            alert(`Successfully copied ${copiedCount} meals to the current week!`);
-        }
-
-        function getWeekAgo(date) {
-            const now = new Date();
-            const diffTime = Math.abs(now - date);
-            const diffWeeks = Math.ceil(diffTime / (1000 * 60 * 60 * 24 * 7));
-            return diffWeeks === 1 ? '1 week' : `${diffWeeks} weeks`;
-        }
-
-        async function downloadAsImage() {
-            try {
-                const btn = event.target;
-                const originalText = btn.textContent;
-                btn.textContent = '📸 Generating...';
-                btn.disabled = true;
-
-                const exportContainer = document.createElement('div');
-                exportContainer.style.cssText = `
-                    background: white;
-                    padding: 30px;
-                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-                    width: 1000px;
-                    margin: 0 auto;
-                `;
-
-                const weekRange = document.getElementById('weekRange').textContent;
-                const header = document.createElement('div');
-                header.style.cssText = `
-                    text-align: center;
-                    margin-bottom: 30px;
-                    border-bottom: 3px solid #e53e3e;
-                    padding-bottom: 20px;
-                `;
-                header.innerHTML = `
-                    <h1 style="color: #e53e3e; font-size: 28px; margin: 0 0 10px 0;">
-                        🍽️ Family Weekly Food Planner
-                    </h1>
-                    <p style="font-size: 18px; color: #2d3748; font-weight: bold; margin: 0;">
-                        ${weekRange}
-                    </p>
-                `;
-
-                const tableElement = document.getElementById('mealTable');
-                const tableClone = tableElement.cloneNode(true);
-                tableClone.style.cssText = `
-                    width: 100%;
-                    border-collapse: collapse;
-                    margin: 0;
-                    font-size: 14px;
-                    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-                    border-radius: 10px;
-                    overflow: hidden;
-                `;
-
-                tableClone.querySelectorAll('.day-actions').forEach(el => el.remove());
-                
-                const cells = tableClone.querySelectorAll('th, td');
-                cells.forEach(cell => {
-                    cell.style.cssText = `
-                        border: 2px solid #e2e8f0;
-                        padding: 15px 10px;
-                        text-align: left;
-                        vertical-align: top;
-                        background: ${cell.tagName === 'TH' ? '#fed7d7' : 'white'};
-                        color: ${cell.classList.contains('meal-type') ? '#e53e3e' : '#2d3748'};
-                        font-weight: ${cell.tagName === 'TH' ? 'bold' : 'normal'};
-                        font-size: 13px;
-                        line-height: 1.4;
-                    `;
-
-                    const mealText = cell.querySelector('.meal-text');
-                    if (mealText) {
-                        const placeholder = mealText.querySelector('.placeholder');
-                        if (placeholder) {
-                            mealText.textContent = '';
-                        }
-                    }
-                });
-
-                const footer = document.createElement('div');
-                footer.style.cssText = `
-                    text-align: center;
-                    margin-top: 30px;
-                    padding-top: 20px;
-                    border-top: 1px solid #e2e8f0;
-                    color: #718096;
-                    font-size: 12px;
-                `;
-                footer.innerHTML = `
-                    Generated on ${new Date().toLocaleDateString('en-US', { 
-                        year: 'numeric', 
-                        month: 'long', 
-                        day: 'numeric' 
-                    })} • Family Weekly Food Planner
-                `;
-
-                exportContainer.appendChild(header);
-                exportContainer.appendChild(tableClone);
-                exportContainer.appendChild(footer);
-
-                exportContainer.style.position = 'absolute';
-                exportContainer.style.left = '-10000px';
-                exportContainer.style.top = '0';
-                document.body.appendChild(exportContainer);
-
-                const canvas = await html2canvas(exportContainer, {
-                    backgroundColor: '#ffffff',
-                    scale: 2,
-                    useCORS: true,
-                    allowTaint: true,
-                    width: 1000,
-                    height: exportContainer.scrollHeight
-                });
-
-                document.body.removeChild(exportContainer);
-
-                const link = document.createElement('a');
-                const weekRangeClean = weekRange.replace(/[^a-zA-Z0-9-]/g, '_');
-                link.download = `family-meal-plan-${weekRangeClean}.png`;
-                link.href = canvas.toDataURL('image/png');
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-
-                alert('✅ Meal plan downloaded as image successfully!');
-
-            } catch (error) {
-                console.error('Error generating image:', error);
-                alert('❌ Sorry, there was an error generating the image. Please try again.');
-            } finally {
-                event.target.textContent = originalText;
-                event.target.disabled = false;
-            }
-        }
-
-        function clearWeekPlan() {
-            if (confirm('Are you sure you want to clear all meals for this week?')) {
-                const weekDates = getWeekDates(currentWeek);
-                weekDates.forEach((date, index) => {
-                    const dateKey = getDateKey(date, index);
-                    meals[dateKey] = {
-                        Breakfast: '',
-                        Lunch: '',
-                        Dinner: ''
-                    };
-                });
-                generateMealTable();
-                saveData();
-            }
-        }
-
-        function switchTab(tab) {
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-            document.getElementById('plannerTab').style.display = tab === 'planner' ? 'block' : 'none';
-            document.getElementById('shoppingTab').style.display = tab === 'shopping' ? 'block' : 'none';
-        }
-
-        // Close modal when clicking outside
-        document.addEventListener('click', function(event) {
-            const modal = document.getElementById('copyModal');
-            if (event.target === modal) {
-                closeCopyModal();
-            }
-        });
-    </script>
-</body>
-</html><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🍽️ Family Weekly Food Planner</title>
+    <title>Weekly Food Planner - Family Edition</title>
     <style>
         * {
             margin: 0;
@@ -1193,123 +19,184 @@
             line-height: 1.6;
         }
 
-        /* Loading Screen */
-        .loading-screen {
+        /* Loading Screen Styles */
+        #loading-screen {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #fff5f5 0%, #fed7d7 100%);
             display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
-            z-index: 9999;
-            color: white;
+            justify-content: center;
+            z-index: 2000;
         }
 
         .loading-spinner {
-            font-size: 4rem;
-            animation: bounce 1s infinite;
+            width: 60px;
+            height: 60px;
+            border: 4px solid #fed7d7;
+            border-top: 4px solid #e53e3e;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
         }
 
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-            40% { transform: translateY(-20px); }
-            60% { transform: translateY(-10px); }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
-        /* Authentication */
-        .auth-container {
+        /* Auth Screen Styles */
+        #auth-container {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #fff5f5 0%, #fed7d7 100%);
             display: none;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
-            z-index: 1000;
+            justify-content: center;
+            z-index: 1500;
+            padding: 20px;
         }
 
         .auth-card {
             background: white;
-            padding: 3rem;
             border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
             text-align: center;
-            max-width: 450px;
-            width: 90%;
+            max-width: 400px;
+            width: 100%;
         }
 
-        .auth-card h1 {
-            margin-bottom: 1rem;
-            color: #333;
-            font-size: 2.2rem;
+        .auth-logo {
+            font-size: 4rem;
+            margin-bottom: 20px;
         }
 
-        .auth-card p {
-            margin-bottom: 2rem;
-            color: #666;
-            font-size: 1rem;
+        .auth-title {
+            color: #e53e3e;
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
         }
 
-        .google-signin-btn {
+        .auth-subtitle {
+            color: #718096;
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+
+        .google-btn {
             background: #4285f4;
             color: white;
             border: none;
             padding: 15px 30px;
-            border-radius: 50px;
+            border-radius: 10px;
             font-size: 16px;
             font-weight: 500;
             cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(66, 133, 244, 0.3);
         }
 
-        .google-signin-btn:hover {
+        .google-btn:hover {
             background: #3367d6;
             transform: translateY(-2px);
         }
 
-        /* User Info in Header */
-        .firebase-user-info {
+        .family-features {
+            margin-top: 30px;
+            text-align: left;
+        }
+
+        .feature-item {
             display: flex;
             align-items: center;
-            gap: 1rem;
-            margin-top: 1rem;
-            padding: 1rem;
-            background: rgba(255,255,255,0.1);
-            border-radius: 10px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        .firebase-user-photo {
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            border: 2px solid #4caf50;
-        }
-
-        .firebase-user-name {
-            font-weight: 500;
+            gap: 10px;
+            margin-bottom: 10px;
             color: #2d3748;
-        }
-
-        .sign-out-btn {
-            background: #dc3545;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 20px;
-            cursor: pointer;
             font-size: 14px;
         }
 
-        /* Your existing styles - keep all of them */
+        /* User Info in Header */
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 10px 0;
+        }
+
+        .user-photo {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 2px solid #e53e3e;
+        }
+
+        .user-name {
+            color: #2d3748;
+            font-weight: 500;
+        }
+
+        .logout-btn {
+            background: #fed7d7;
+            color: #e53e3e;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+
+        .logout-btn:hover {
+            background: #e53e3e;
+            color: white;
+        }
+
+        /* Sync Status */
+        .sync-status {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
+            color: #718096;
+            margin-top: 5px;
+        }
+
+        .sync-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #68d391;
+        }
+
+        .sync-indicator.syncing {
+            background: #f6ad55;
+            animation: pulse 1s infinite;
+        }
+
+        .sync-indicator.error {
+            background: #f56565;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Rest of your existing styles */
         .container {
             max-width: 1200px;
             margin: 0 auto;
@@ -1480,7 +367,7 @@
 
         .day-header {
             position: relative;
-            padding-top: 30px;
+            padding-top: 30px; /* Make room for action buttons */
         }
 
         .day-actions {
@@ -1565,7 +452,6 @@
             font-style: italic;
         }
 
-        /* All your other existing styles... */
         .shopping-section {
             margin-bottom: 30px;
         }
@@ -1994,9 +880,12 @@
                 flex-direction: column;
             }
 
-            .firebase-user-info {
-                flex-direction: column;
-                gap: 0.5rem;
+            .auth-card {
+                padding: 30px 20px;
+            }
+
+            .auth-title {
+                font-size: 1.5rem;
             }
         }
 
@@ -2017,79 +906,1606 @@
                 height: 50px;
                 font-size: 11px;
             }
+        }
 
-            .auth-card {
-                padding: 2rem 1.5rem;
-            }
-
-            .auth-card h1 {
-                font-size: 2rem;
-            }
+        /* Hide app initially */
+        #app-container {
+            display: none;
         }
     </style>
     
-    <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <!-- Firebase SDKs - Using version 8.x for better compatibility -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     
     <!-- HTML2Canvas library for image export -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
     <!-- Loading Screen -->
-    <div id="loading-screen" class="loading-screen">
-        <div class="loading-spinner">🍽️</div>
-        <p style="margin-top: 1rem; font-size: 1.2rem;">Loading Family Meal Planner...</p>
+    <div id="loading-screen">
+        <div class="loading-spinner"></div>
+        <h2 style="color: #e53e3e; margin-bottom: 10px;">🍽️ Loading Family Food Planner</h2>
+        <p style="color: #718096;">Connecting to your family...</p>
     </div>
 
-    <!-- Authentication Container -->
-    <div id="auth-container" class="auth-container">
+    <!-- Authentication Screen -->
+    <div id="auth-container">
         <div class="auth-card">
-            <h1>🍽️ Family Meal Planner</h1>
-            <p>Plan meals together with your family in real-time</p>
-            <button id="google-signin" class="google-signin-btn">
-                📧 Sign in with Google
+            <div class="auth-logo">👨‍👩‍👧‍👦</div>
+            <h1 class="auth-title">Family Food Planner</h1>
+            <p class="auth-subtitle">Plan meals together, shop smarter</p>
+            
+            <button class="google-btn" onclick="signInWithGoogle()">
+                <svg width="20" height="20" viewBox="0 0 24 24">
+                    <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                    <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                    <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                    <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                </svg>
+                Continue with Google
             </button>
-            <div style="margin-top: 1.5rem; padding: 1rem; background: #f0f8ff; border-radius: 10px;">
-                <p style="font-size: 0.9rem; color: #666; margin: 0;">
-                    ✨ <strong>Family Features:</strong> Real-time collaboration and cloud sync across all devices!
-                </p>
+
+            <div class="family-features">
+                <h3 style="margin-bottom: 15px; color: #2d3748;">👥 Family Features:</h3>
+                <div class="feature-item">
+                    <span>🔄</span>
+                    <span>Real-time sync across all devices</span>
+                </div>
+                <div class="feature-item">
+                    <span>🛒</span>
+                    <span>Shared shopping lists</span>
+                </div>
+                <div class="feature-item">
+                    <span>📱</span>
+                    <span>Works on phones, tablets, computers</span>
+                </div>
+                <div class="feature-item">
+                    <span>💾</span>
+                    <span>Automatic cloud backup</span>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- Main App Container -->
-    <div id="app-container" class="container" style="display: none;">
-        <!-- Header -->
-        <div class="header">
-            <h1>🍽️ Weekly Food Planner</h1>
-            
-            <!-- Firebase User Info -->
-            <div class="firebase-user-info" id="firebase-user-info">
-                <img id="user-photo" class="firebase-user-photo" src="" alt="User">
-                <span id="user-name" class="firebase-user-name">Loading...</span>
-                <button id="sign-out-btn" class="sign-out-btn">Sign Out</button>
-            </div>
-            
-            <div class="week-nav">
-                <button class="nav-btn" onclick="goToPreviousWeek()">← Previous</button>
-                <div class="week-info">
-                    <div id="weekRange"></div>
-                    <button class="current-week-btn" onclick="goToCurrentWeek()">Go to current week</button>
+    <div id="app-container">
+        <div class="container">
+            <!-- Header -->
+            <div class="header">
+                <h1>🍽️ Family Food Planner</h1>
+                
+                <!-- User Info -->
+                <div class="user-info">
+                    <img id="user-photo" class="user-photo" src="" alt="">
+                    <span id="user-name" class="user-name">Family Member</span>
+                    <button class="logout-btn" onclick="signOut()">Sign Out</button>
                 </div>
-                <button class="nav-btn" onclick="goToNextWeek()">Next →</button>
+                
+                <!-- Sync Status -->
+                <div class="sync-status">
+                    <div id="sync-indicator" class="sync-indicator"></div>
+                    <span id="sync-text">Synced with family</span>
+                </div>
+                
+                <div class="week-nav">
+                    <button class="nav-btn" onclick="goToPreviousWeek()">← Previous</button>
+                    <div class="week-info">
+                        <div id="weekRange"></div>
+                        <button class="current-week-btn" onclick="goToCurrentWeek()">Go to current week</button>
+                    </div>
+                    <button class="nav-btn" onclick="goToNextWeek()">Next →</button>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="nav-btn success" onclick="openCopyModal()">📋 Copy from Previous</button>
+                    <button class="nav-btn secondary" onclick="downloadAsImage()">📸 Download as Image</button>
+                    <button class="nav-btn" onclick="generateShoppingList()">🛒 Generate Shopping List</button>
+                    <button class="nav-btn warning" onclick="clearShoppingList()">🗑️ Clear Shopping List</button>
+                    <button class="nav-btn" onclick="clearWeekPlan()">🗑️ Clear Week</button>
+                </div>
             </div>
 
-            <div class="action-buttons">
-                <button class="nav-btn success" onclick="openCopyModal()">📋 Copy from Previous</button>
-                <button class="nav-btn secondary" onclick="downloadAsImage()">📸 Download as Image</button>
-                <button class="nav-btn" onclick="generateShoppingList()">🛒 Generate Shopping List</button>
-                <button class="nav-btn warning" onclick="clearShoppingList()">🗑️ Clear Shopping List</button>
-                <button class="nav-btn" onclick="clearWeekPlan()">🗑️ Clear Week</button>
+            <!-- Tabs -->
+            <div class="tabs">
+                <div class="tab-nav">
+                    <button class="tab-btn active" onclick="switchTab('planner')">
+                        📅 Meal Planner
+                    </button>
+                    <button class="tab-btn" onclick="switchTab('shopping')">
+                        🛒 Shopping List (<span id="shoppingCount">0</span>)
+                    </button>
+                </div>
+
+                <div class="tab-content">
+                    <!-- Meal Planner Tab -->
+                    <div id="plannerTab">
+                        <div style="overflow-x: auto;">
+                            <table class="meal-table" id="mealTable">
+                                <thead>
+                                    <tr>
+                                        <th class="meal-type">Day</th>
+                                        <th class="day-header">
+                                            <div class="day-actions">
+                                                <button class="day-action-btn" onclick="copyDay(0)" title="Copy Day">📋</button>
+                                                <button class="day-action-btn" onclick="clearDay(0)" title="Clear Day">🗑️</button>
+                                            </div>
+                                            <div class="day-content">
+                                                <div style="color: #e53e3e; font-weight: bold; font-size: 14px;">Monday</div>
+                                                <div style="font-size: 12px; color: #718096; font-weight: normal; margin-top: 2px;">
+                                                    Jun 30
+                                                </div>
+                                            </div>
+                                        </th>
+                                        <th class="day-header">
+                                            <div class="day-actions">
+                                                <button class="day-action-btn" onclick="copyDay(1)" title="Copy Day">📋</button>
+                                                <button class="day-action-btn" onclick="clearDay(1)" title="Clear Day">🗑️</button>
+                                            </div>
+                                            <div class="day-content">
+                                                <div style="color: #e53e3e; font-weight: bold; font-size: 14px;">Tuesday</div>
+                                                <div style="font-size: 12px; color: #718096; font-weight: normal; margin-top: 2px;">
+                                                    Jul 1
+                                                </div>
+                                            </div>
+                                        </th>
+                                        <th class="day-header">
+                                            <div class="day-actions">
+                                                <button class="day-action-btn" onclick="copyDay(2)" title="Copy Day">📋</button>
+                                                <button class="day-action-btn" onclick="clearDay(2)" title="Clear Day">🗑️</button>
+                                            </div>
+                                            <div class="day-content">
+                                                <div style="color: #e53e3e; font-weight: bold; font-size: 14px;">Wednesday</div>
+                                                <div style="font-size: 12px; color: #718096; font-weight: normal; margin-top: 2px;">
+                                                    Jul 2
+                                                </div>
+                                            </div>
+                                        </th>
+                                        <th class="day-header">
+                                            <div class="day-actions">
+                                                <button class="day-action-btn" onclick="copyDay(3)" title="Copy Day">📋</button>
+                                                <button class="day-action-btn" onclick="clearDay(3)" title="Clear Day">🗑️</button>
+                                            </div>
+                                            <div class="day-content">
+                                                <div style="color: #e53e3e; font-weight: bold; font-size: 14px;">Thursday</div>
+                                                <div style="font-size: 12px; color: #718096; font-weight: normal; margin-top: 2px;">
+                                                    Jul 3
+                                                </div>
+                                            </div>
+                                        </th>
+                                        <th class="day-header">
+                                            <div class="day-actions">
+                                                <button class="day-action-btn" onclick="copyDay(4)" title="Copy Day">📋</button>
+                                                <button class="day-action-btn" onclick="clearDay(4)" title="Clear Day">🗑️</button>
+                                            </div>
+                                            <div class="day-content">
+                                                <div style="color: #e53e3e; font-weight: bold; font-size: 14px;">Friday</div>
+                                                <div style="font-size: 12px; color: #718096; font-weight: normal; margin-top: 2px;">
+                                                    Jul 4
+                                                </div>
+                                            </div>
+                                        </th>
+                                        <th class="day-header">
+                                            <div class="day-actions">
+                                                <button class="day-action-btn" onclick="copyDay(5)" title="Copy Day">📋</button>
+                                                <button class="day-action-btn" onclick="clearDay(5)" title="Clear Day">🗑️</button>
+                                            </div>
+                                            <div class="day-content">
+                                                <div style="color: #e53e3e; font-weight: bold; font-size: 14px;">Saturday</div>
+                                                <div style="font-size: 12px; color: #718096; font-weight: normal; margin-top: 2px;">
+                                                    Jul 5
+                                                </div>
+                                            </div>
+                                        </th>
+                                        <th class="day-header">
+                                            <div class="day-actions">
+                                                <button class="day-action-btn" onclick="copyDay(6)" title="Copy Day">📋</button>
+                                                <button class="day-action-btn" onclick="clearDay(6)" title="Clear Day">🗑️</button>
+                                            </div>
+                                            <div class="day-content">
+                                                <div style="color: #e53e3e; font-weight: bold; font-size: 14px;">Sunday</div>
+                                                <div style="font-size: 12px; color: #718096; font-weight: normal; margin-top: 2px;">
+                                                    Jul 6
+                                                </div>
+                                            </div>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody id="mealTableBody">
+                                    <!-- Generated by JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Shopping List Tab -->
+                    <div id="shoppingTab" style="display: none;">
+                        <div class="shopping-section">
+                            <div class="add-item">
+                                <h3>Add to Shopping List</h3>
+                                <div class="add-item-form">
+                                    <input type="text" id="newIngredient" placeholder="Enter ingredient or item..." onkeypress="handleIngredientKeyPress(event)">
+                                    <button class="add-btn" onclick="addToShoppingList()">+ Add</button>
+                                </div>
+                            </div>
+
+                            <div class="shopping-list">
+                                <div class="shopping-controls">
+                                    <button class="nav-btn secondary" onclick="toggleSelectMode()">📌 Select Mode</button>
+                                    <button class="nav-btn" onclick="deleteSelectedItems()" id="deleteSelectedBtn" style="display: none;">🗑️ Delete Selected</button>
+                                    <button class="nav-btn success" onclick="markSelectedCompleted()" id="markSelectedBtn" style="display: none;">✅ Mark Completed</button>
+                                </div>
+                                
+                                <h3>Shopping List</h3>
+                                <div id="shoppingItems">
+                                    <!-- Generated by JavaScript -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tips -->
+            <div class="tips">
+                <h3>🍳 Tips for Family Meal Planning</h3>
+                <div class="tips-grid">
+                    <div class="tip-card orange">
+                        <strong>Family Sync:</strong> Changes made by any family member sync automatically across all devices.
+                    </div>
+                    <div class="tip-card green">
+                        <strong>Smart Shopping:</strong> Click "Generate Shopping List" to extract ingredients from your meals automatically.
+                    </div>
+                    <div class="tip-card blue">
+                        <strong>Copy & Paste:</strong> Use the 📋 buttons to copy entire days or individual meals between weeks.
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- Tabs -->
-        <div class="tabs">
-            <div class="tab-nav
+        <!-- Copy Modal -->
+        <div id="copyModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">Copy from Previous Weeks</h2>
+                    <button class="close-btn" onclick="closeCopyModal()">×</button>
+                </div>
+                
+                <div class="week-selector">
+                    <p style="margin-bottom: 15px; color: #718096;">Select what to copy:</p>
+                    <div class="week-list" id="previousWeeksList">
+                        <!-- Generated by JavaScript -->
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <button class="nav-btn" onclick="closeCopyModal()">Cancel</button>
+                    <button class="nav-btn success" onclick="copySelectedItems()">📋 Copy Selected</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDicuf9DBTnEvoXK7WxCnOf8nb_u8hazcQ",
+            authDomain: "meals-planner-weekly.firebaseapp.com",
+            projectId: "meals-planner-weekly",
+            storageBucket: "meals-planner-weekly.firebasestorage.app",
+            messagingSenderId: "303592781889",
+            appId: "1:303592781889:web:e52068c3bde39e90c5aec0"
+        };
+
+        // Global variables
+        let currentWeek = new Date();
+        let meals = {};
+        let shoppingList = [];
+        let editingCell = null;
+        let selectedItemsToCopy = [];
+        let isSelectMode = false;
+        let selectedShoppingItems = new Set();
+        let draggedMeal = null;
+        let draggedFromDay = null;
+        let draggedFromMealType = null;
+        let currentUser = null;
+        let isOnline = navigator.onLine;
+        let auth = null;
+        let db = null;
+        let firebaseInitialized = false;
+
+        const weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+        const mealTypes = ['Breakfast', 'Lunch', 'Dinner'];
+
+        // Initialize Firebase when available
+        function initializeFirebase() {
+            try {
+                if (typeof firebase !== 'undefined') {
+                    firebase.initializeApp(firebaseConfig);
+                    auth = firebase.auth();
+                    db = firebase.firestore();
+                    firebaseInitialized = true;
+                    
+                    console.log('🔥 Firebase initialized successfully!');
+                    console.log('👨‍👩‍👧‍👦 Ready for family collaboration!');
+                    
+                    // Setup auth state listener
+                    setupAuthStateListener();
+                    
+                    return true;
+                }
+            } catch (error) {
+                console.error('❌ Firebase initialization failed:', error);
+                firebaseInitialized = false;
+            }
+            return false;
+        }
+
+        // Setup authentication state listener
+        function setupAuthStateListener() {
+            if (!auth) return;
+            
+            auth.onAuthStateChanged((user) => {
+                const loadingScreen = document.getElementById('loading-screen');
+                const authContainer = document.getElementById('auth-container');
+                const appContainer = document.getElementById('app-container');
+                
+                if (user) {
+                    // User signed in - show meal planner
+                    currentUser = user;
+                    console.log('✅ Welcome,', user.displayName);
+                    
+                    if (loadingScreen) loadingScreen.style.display = 'none';
+                    if (authContainer) authContainer.style.display = 'none';
+                    if (appContainer) appContainer.style.display = 'block';
+                    
+                    // Update user info in header
+                    const userName = document.getElementById('user-name');
+                    const userPhoto = document.getElementById('user-photo');
+                    
+                    if (userName) userName.textContent = user.displayName || 'Family Member';
+                    if (userPhoto && user.photoURL) {
+                        userPhoto.src = user.photoURL;
+                        userPhoto.style.display = 'block';
+                    } else if (userPhoto) {
+                        userPhoto.style.display = 'none';
+                    }
+                    
+                    // Load data from Firebase first, then init app
+                    loadFromFirebase().then(() => {
+                        init();
+                        updateSyncStatus('synced', 'Synced with family');
+                        setupRealtimeListener();
+                    });
+                    
+                } else {
+                    // User not signed in - show auth screen
+                    currentUser = null;
+                    if (loadingScreen) loadingScreen.style.display = 'none';
+                    if (authContainer) authContainer.style.display = 'flex';
+                    if (appContainer) appContainer.style.display = 'none';
+                }
+            });
+        }
+
+        // Firebase Authentication
+        function signInWithGoogle() {
+            if (!auth) {
+                alert('Authentication not available. Please refresh the page.');
+                return;
+            }
+            
+            const provider = new firebase.auth.GoogleAuthProvider();
+            provider.setCustomParameters({
+                prompt: 'select_account'
+            });
+            
+            auth.signInWithPopup(provider)
+                .then((result) => {
+                    console.log('✅ Signed in successfully:', result.user.displayName);
+                    updateSyncStatus('synced', 'Signed in successfully');
+                })
+                .catch((error) => {
+                    console.error('❌ Sign in error:', error);
+                    alert('Sign in failed. Please try again.');
+                });
+        }
+
+        function signOut() {
+            if (!auth) return;
+            
+            if (confirm('Sign out? Your data will remain saved in the cloud.')) {
+                auth.signOut()
+                    .then(() => {
+                        console.log('👋 Signed out successfully');
+                    })
+                    .catch((error) => {
+                        console.error('Sign out error:', error);
+                    });
+            }
+        }
+
+        // Firebase data sync functions
+        async function loadFromFirebase() {
+            if (!currentUser || !db) return;
+            
+            try {
+                updateSyncStatus('syncing', 'Loading from cloud...');
+                
+                const doc = await db.collection('families').doc(currentUser.uid).get();
+                if (doc.exists) {
+                    const data = doc.data();
+                    
+                    if (data.meals) {
+                        meals = data.meals;
+                        console.log('📥 Loaded meals from Firebase');
+                    }
+                    
+                    if (data.shopping) {
+                        shoppingList = data.shopping;
+                        console.log('📥 Loaded shopping list from Firebase');
+                    }
+                    
+                    if (data.lastUpdated) {
+                        console.log('🕒 Last updated:', data.lastUpdated.toDate());
+                        if (data.updatedBy && data.updatedBy !== currentUser.displayName) {
+                            console.log('👥 Last updated by:', data.updatedBy);
+                        }
+                    }
+                }
+                
+                updateSyncStatus('synced', 'Loaded from cloud');
+                
+            } catch (error) {
+                console.error('❌ Error loading from Firebase:', error);
+                updateSyncStatus('error', 'Failed to load from cloud');
+                
+                // Fallback to local storage
+                loadDataLocal();
+            }
+        }
+
+        async function syncToFirebase() {
+            if (!currentUser || !isOnline || !db) return;
+            
+            try {
+                updateSyncStatus('syncing', 'Syncing to cloud...');
+                
+                await db.collection('families').doc(currentUser.uid).set({
+                    meals: meals,
+                    shopping: shoppingList,
+                    lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
+                    updatedBy: currentUser.displayName || 'Family Member'
+                }, { merge: true });
+                
+                console.log('☁️ Data synced to Firebase');
+                updateSyncStatus('synced', 'Synced with family');
+                
+            } catch (error) {
+                console.error('❌ Sync error:', error);
+                updateSyncStatus('error', 'Sync failed');
+                
+                // Save locally as backup
+                saveDataLocal();
+            }
+        }
+
+        function updateSyncStatus(status, message) {
+            const indicator = document.getElementById('sync-indicator');
+            const text = document.getElementById('sync-text');
+            
+            if (indicator) {
+                indicator.className = `sync-indicator ${status}`;
+            }
+            
+            if (text) {
+                text.textContent = message;
+            }
+        }
+
+        // Network status monitoring
+        window.addEventListener('online', () => {
+            isOnline = true;
+            console.log('🌐 Back online - syncing data...');
+            syncToFirebase();
+        });
+
+        window.addEventListener('offline', () => {
+            isOnline = false;
+            console.log('📡 Offline - using local storage');
+            updateSyncStatus('error', 'Offline mode');
+        });
+
+        // Enhanced save function with Firebase sync
+        function saveData() {
+            // Save locally first for immediate response
+            saveDataLocal();
+            
+            // Then sync to Firebase if available
+            if (currentUser && firebaseInitialized) {
+                syncToFirebase();
+            }
+        }
+
+        // Local storage functions (backup)
+        function saveDataLocal() {
+            localStorage.setItem('foodPlannerMeals', JSON.stringify(meals));
+            localStorage.setItem('foodPlannerShopping', JSON.stringify(shoppingList));
+            localStorage.setItem('foodPlannerCurrentWeek', currentWeek.toISOString());
+        }
+
+        function loadDataLocal() {
+            const savedMeals = localStorage.getItem('foodPlannerMeals');
+            const savedShopping = localStorage.getItem('foodPlannerShopping');
+            const savedWeek = localStorage.getItem('foodPlannerCurrentWeek');
+
+            if (savedMeals) {
+                meals = JSON.parse(savedMeals);
+            }
+            if (savedShopping) {
+                shoppingList = JSON.parse(savedShopping);
+            }
+            if (savedWeek) {
+                currentWeek = new Date(savedWeek);
+            }
+
+            // Add sample data if empty
+            if (Object.keys(meals).length === 0) {
+                addSampleData();
+            }
+        }
+
+        // Real-time listener for family updates
+        function setupRealtimeListener() {
+            if (!currentUser || !db) return;
+            
+            db.collection('families').doc(currentUser.uid)
+                .onSnapshot((doc) => {
+                    if (doc.exists) {
+                        const data = doc.data();
+                        
+                        // Check if update was from another user
+                        if (data.updatedBy && data.updatedBy !== currentUser.displayName) {
+                            console.log('👥 Family member updated data:', data.updatedBy);
+                            
+                            // Update local data
+                            if (data.meals) meals = data.meals;
+                            if (data.shopping) shoppingList = data.shopping;
+                            
+                            // Refresh UI
+                            generateMealTable();
+                            updateShoppingDisplay();
+                            
+                            // Show notification
+                            updateSyncStatus('synced', `Updated by ${data.updatedBy}`);
+                            setTimeout(() => {
+                                updateSyncStatus('synced', 'Synced with family');
+                            }, 3000);
+                        }
+                    }
+                }, (error) => {
+                    console.error('❌ Realtime listener error:', error);
+                    updateSyncStatus('error', 'Connection lost');
+                });
+        }
+
+        // Ingredient extraction patterns - improve intelligence
+        const ingredientPatterns = {
+            // Common dish patterns where ingredient comes first
+            'mutton biryani': ['mutton', 'rice', 'onions', 'yogurt'],
+            'chicken curry': ['chicken', 'onions', 'tomatoes', 'coconut'],
+            'fish fry': ['fish', 'oil', 'spices'],
+            'egg curry': ['eggs', 'onions', 'tomatoes'],
+            'dal rice': ['dal', 'rice'],
+            'curd rice': ['rice', 'curd'],
+            'sambar rice': ['rice', 'sambar', 'dal'],
+            'rasam rice': ['rice', 'tomatoes', 'tamarind'],
+            'lemon rice': ['rice', 'lemon'],
+            'coconut rice': ['rice', 'coconut'],
+            'vegetable biryani': ['rice', 'mixed vegetables', 'onions'],
+            'paneer curry': ['paneer', 'onions', 'tomatoes'],
+            'aloo gobi': ['potatoes', 'cauliflower'],
+            'palak paneer': ['spinach', 'paneer'],
+            'rajma chawal': ['rajma', 'rice'],
+            'chole bhature': ['chickpeas', 'flour'],
+            'masala dosa': ['rice', 'urad dal', 'potatoes'],
+            'idli sambar': ['rice', 'urad dal', 'dal'],
+            'upma': ['semolina', 'vegetables'],
+            'poha': ['flattened rice', 'onions', 'potatoes']
+        };
+
+        // Initialize app
+        function init() {
+            // Don't load local data if we're logged in (Firebase data takes precedence)
+            if (!currentUser) {
+                loadDataLocal();
+            }
+            
+            updateWeekDisplay();
+            generateMealTable();
+            updateShoppingDisplay();
+            setupDragAndDrop();
+            
+            // Setup realtime listener for family updates
+            if (currentUser) {
+                setupRealtimeListener();
+            }
+        }
+
+        function addSampleData() {
+            const weekDates = getWeekDates(currentWeek);
+            const sampleMeals = {
+                [`${weekDays[0]}-${weekDates[0].getDate()}-${weekDates[0].getMonth()}-${weekDates[0].getFullYear()}`]: {
+                    Breakfast: 'Idiyappam + coconut milk',
+                    Lunch: 'Garlic Rice and Egg roast',
+                    Dinner: 'Sandwich'
+                },
+                [`${weekDays[1]}-${weekDates[1].getDate()}-${weekDates[1].getMonth()}-${weekDates[1].getFullYear()}`]: {
+                    Breakfast: 'Bread Omelette',
+                    Lunch: 'Manathakkali Kootu + Rice + Sambhar',
+                    Dinner: 'Pasta'
+                },
+                [`${weekDays[2]}-${weekDates[2].getDate()}-${weekDates[2].getMonth()}-${weekDates[2].getFullYear()}`]: {
+                    Breakfast: 'Idli + Mutton Curry',
+                    Lunch: 'Mutton Biryani',
+                    Dinner: 'Noodles'
+                },
+                [`${weekDays[3]}-${weekDates[3].getDate()}-${weekDates[3].getMonth()}-${weekDates[3].getFullYear()}`]: {
+                    Breakfast: 'Pongal with ghee and chutney',
+                    Lunch: 'Puli Kulambu Sundaika + Kootu or carrot poriyal',
+                    Dinner: 'Chappathi + Egg'
+                },
+                [`${weekDays[4]}-${weekDates[4].getDate()}-${weekDates[4].getMonth()}-${weekDates[4].getFullYear()}`]: {
+                    Breakfast: 'Roti + mushroom or sabzi',
+                    Lunch: 'Pappu + Rice + Pappad',
+                    Dinner: '-'
+                }
+            };
+            meals = { ...meals, ...sampleMeals };
+            saveData();
+        }
+
+        // Week navigation functions
+        function getWeekDates(date) {
+            const week = [];
+            const startDate = new Date(date);
+            const day = startDate.getDay();
+            const diff = startDate.getDate() - day + (day === 0 ? -6 : 1);
+            startDate.setDate(diff);
+            
+            for (let i = 0; i < 7; i++) {
+                const currentDate = new Date(startDate);
+                currentDate.setDate(startDate.getDate() + i);
+                week.push(currentDate);
+            }
+            return week;
+        }
+
+        function getDateKey(date, dayIndex) {
+            return `${weekDays[dayIndex]}-${date.getDate()}-${date.getMonth()}-${date.getFullYear()}`;
+        }
+
+        function updateWeekDisplay() {
+            const weekDates = getWeekDates(currentWeek);
+            const start = weekDates[0];
+            const end = weekDates[6];
+            const range = `${start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${end.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`;
+            document.getElementById('weekRange').textContent = range;
+        }
+
+        function goToPreviousWeek() {
+            currentWeek.setDate(currentWeek.getDate() - 7);
+            updateWeekDisplay();
+            generateMealTable();
+            saveData();
+        }
+
+        function goToNextWeek() {
+            currentWeek.setDate(currentWeek.getDate() + 7);
+            updateWeekDisplay();
+            generateMealTable();
+            saveData();
+        }
+
+        function goToCurrentWeek() {
+            currentWeek = new Date();
+            updateWeekDisplay();
+            generateMealTable();
+            saveData();
+        }
+
+        // Meal table functions
+        function generateMealTable() {
+            const weekDates = getWeekDates(currentWeek);
+            const tbody = document.getElementById('mealTableBody');
+            tbody.innerHTML = '';
+
+            // Update header with dates
+            const headers = document.querySelectorAll('#mealTable th');
+            weekDays.forEach((day, index) => {
+                if (headers[index + 1]) {
+                    headers[index + 1].className = 'day-header';
+                    headers[index + 1].innerHTML = `
+                        <div style="color: #e53e3e; font-weight: bold; font-size: 14px; margin-bottom: 5px;">${day}</div>
+                        <div style="font-size: 12px; color: #718096; font-weight: normal;">
+                            ${weekDates[index].toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                        </div>
+                    `;
+                }
+            });
+
+            // Initialize meals for current week
+            weekDates.forEach((date, index) => {
+                const dateKey = getDateKey(date, index);
+                if (!meals[dateKey]) {
+                    meals[dateKey] = {
+                        Breakfast: '',
+                        Lunch: '',
+                        Dinner: ''
+                    };
+                }
+            });
+
+            // Generate rows
+            mealTypes.forEach(mealType => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="meal-type" style="background: #fff5f5; color: #e53e3e; font-weight: 600;">
+                        ${mealType}
+                    </td>
+                `;
+
+                weekDays.forEach((day, index) => {
+                    const dateKey = getDateKey(weekDates[index], index);
+                    const mealValue = meals[dateKey]?.[mealType] || '';
+
+                    const cell = document.createElement('td');
+                    cell.className = 'meal-cell';
+                    cell.draggable = true;
+                    cell.dataset.day = index;
+                    cell.dataset.mealType = mealType;
+                    cell.onclick = () => handleCellClick(dateKey, mealType, cell);
+                    
+                    cell.innerHTML = `
+                        <div class="meal-text" style="min-height: 44px; padding: 8px; word-wrap: break-word; white-space: pre-wrap;">
+                            ${mealValue || '<span class="placeholder">Click to add meal</span>'}
+                        </div>
+                    `;
+
+                    row.appendChild(cell);
+                });
+
+                tbody.appendChild(row);
+            });
+        }
+
+        function handleCellClick(dateKey, mealType, cell) {
+            if (editingCell) return;
+
+            editingCell = { dateKey, mealType, cell };
+            const currentValue = meals[dateKey]?.[mealType] || '';
+            
+            cell.innerHTML = `
+                <textarea class="meal-input" 
+                    onblur="saveMeal()"
+                    onkeydown="handleKeyDown(event)"
+                    placeholder="Add meal..."
+                >${currentValue}</textarea>
+            `;
+            
+            const textarea = cell.querySelector('textarea');
+            textarea.focus();
+            textarea.select();
+        }
+
+        function saveMeal() {
+            if (!editingCell) return;
+
+            const { dateKey, mealType, cell } = editingCell;
+            const textarea = cell.querySelector('textarea');
+            const value = textarea.value.trim();
+
+            if (!meals[dateKey]) {
+                meals[dateKey] = {};
+            }
+            meals[dateKey][mealType] = value;
+
+            cell.innerHTML = `
+                <div class="meal-text" style="min-height: 44px; padding: 8px; word-wrap: break-word; white-space: pre-wrap;">
+                    ${value || '<span class="placeholder">Click to add meal</span>'}
+                </div>
+            `;
+
+            editingCell = null;
+            saveData();
+        }
+
+        function handleKeyDown(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                saveMeal();
+            } else if (event.key === 'Escape') {
+                cancelEdit();
+            }
+        }
+
+        function cancelEdit() {
+            if (!editingCell) return;
+
+            const { dateKey, mealType, cell } = editingCell;
+            const currentValue = meals[dateKey]?.[mealType] || '';
+
+            cell.innerHTML = `
+                <div class="meal-text" style="min-height: 44px; padding: 8px; word-wrap: break-word; white-space: pre-wrap;">
+                    ${currentValue || '<span class="placeholder">Click to add meal</span>'}
+                </div>
+            `;
+
+            editingCell = null;
+        }
+
+        // Drag and Drop functionality
+        function setupDragAndDrop() {
+            document.addEventListener('dragstart', handleDragStart);
+            document.addEventListener('dragover', handleDragOver);
+            document.addEventListener('drop', handleDrop);
+            document.addEventListener('dragend', handleDragEnd);
+        }
+
+        function handleDragStart(e) {
+            if (!e.target.classList.contains('meal-cell')) return;
+            
+            const dayIndex = e.target.dataset.day;
+            const mealType = e.target.dataset.mealType;
+            const weekDates = getWeekDates(currentWeek);
+            const dateKey = getDateKey(weekDates[dayIndex], parseInt(dayIndex));
+            
+            draggedMeal = meals[dateKey]?.[mealType] || '';
+            draggedFromDay = dayIndex;
+            draggedFromMealType = mealType;
+            
+            e.target.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+        }
+
+        function handleDragOver(e) {
+            if (!e.target.classList.contains('meal-cell')) return;
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            e.target.classList.add('drop-target');
+        }
+
+        function handleDrop(e) {
+            if (!e.target.classList.contains('meal-cell')) return;
+            e.preventDefault();
+            
+            const targetDay = e.target.dataset.day;
+            const targetMealType = e.target.dataset.mealType;
+            const weekDates = getWeekDates(currentWeek);
+            
+            if (draggedMeal && draggedFromDay !== null) {
+                // Clear source
+                const sourceKey = getDateKey(weekDates[draggedFromDay], parseInt(draggedFromDay));
+                if (meals[sourceKey]) {
+                    meals[sourceKey][draggedFromMealType] = '';
+                }
+                
+                // Set target
+                const targetKey = getDateKey(weekDates[targetDay], parseInt(targetDay));
+                if (!meals[targetKey]) {
+                    meals[targetKey] = {};
+                }
+                meals[targetKey][targetMealType] = draggedMeal;
+                
+                saveData();
+                generateMealTable();
+            }
+            
+            e.target.classList.remove('drop-target');
+        }
+
+        function handleDragEnd(e) {
+            if (e.target.classList.contains('meal-cell')) {
+                e.target.classList.remove('dragging');
+            }
+            document.querySelectorAll('.meal-cell').forEach(cell => {
+                cell.classList.remove('drop-target');
+            });
+            
+            draggedMeal = null;
+            draggedFromDay = null;
+            draggedFromMealType = null;
+        }
+
+        // Day operations
+        function copyDay(dayIndex) {
+            const weekDates = getWeekDates(currentWeek);
+            const dateKey = getDateKey(weekDates[dayIndex], dayIndex);
+            const dayMeals = meals[dateKey];
+            
+            if (!dayMeals || Object.values(dayMeals).every(meal => !meal || meal.trim() === '')) {
+                alert('No meals found for this day to copy!');
+                return;
+            }
+            
+            // Store in clipboard-like storage
+            localStorage.setItem('copiedDay', JSON.stringify(dayMeals));
+            localStorage.setItem('copiedDayName', weekDays[dayIndex]);
+            
+            alert(`📋 Copied ${weekDays[dayIndex]}'s meals! Click on any day header's paste button to paste.`);
+            
+            // Add paste buttons to all day headers
+            setTimeout(() => {
+                document.querySelectorAll('.day-actions').forEach((actions, index) => {
+                    if (!actions.querySelector('.paste-btn')) {
+                        const pasteBtn = document.createElement('button');
+                        pasteBtn.className = 'day-action-btn paste-btn';
+                        pasteBtn.innerHTML = '📂';
+                        pasteBtn.title = 'Paste Day';
+                        pasteBtn.onclick = () => pasteDay(index);
+                        actions.appendChild(pasteBtn);
+                    }
+                });
+            }, 100);
+        }
+
+        function pasteDay(dayIndex) {
+            const copiedDay = localStorage.getItem('copiedDay');
+            if (!copiedDay) {
+                alert('No day copied! Copy a day first.');
+                return;
+            }
+            
+            const copiedMeals = JSON.parse(copiedDay);
+            const copiedDayName = localStorage.getItem('copiedDayName');
+            const weekDates = getWeekDates(currentWeek);
+            const targetKey = getDateKey(weekDates[dayIndex], dayIndex);
+            
+            if (!meals[targetKey]) {
+                meals[targetKey] = {};
+            }
+            
+            meals[targetKey] = { ...copiedMeals };
+            saveData();
+            generateMealTable();
+            
+            alert(`📂 Pasted ${copiedDayName}'s meals to ${weekDays[dayIndex]}!`);
+        }
+
+        function clearDay(dayIndex) {
+            if (confirm(`Clear all meals for ${weekDays[dayIndex]}?`)) {
+                const weekDates = getWeekDates(currentWeek);
+                const dateKey = getDateKey(weekDates[dayIndex], dayIndex);
+                
+                meals[dateKey] = {
+                    Breakfast: '',
+                    Lunch: '',
+                    Dinner: ''
+                };
+                
+                saveData();
+                generateMealTable();
+            }
+        }
+
+        // Enhanced copy modal for individual meals and weeks
+        function openCopyModal() {
+            generateCopyOptions();
+            document.getElementById('copyModal').classList.add('show');
+        }
+
+        function closeCopyModal() {
+            document.getElementById('copyModal').classList.remove('show');
+            selectedItemsToCopy = [];
+        }
+
+        function generateCopyOptions() {
+            const container = document.getElementById('previousWeeksList');
+            container.innerHTML = '';
+
+            const weeksWithData = [];
+            const currentWeekDates = getWeekDates(currentWeek);
+            const currentWeekStart = currentWeekDates[0];
+
+            // Look back up to 12 weeks
+            for (let weeksBack = 1; weeksBack <= 12; weeksBack++) {
+                const weekDate = new Date(currentWeekStart);
+                weekDate.setDate(weekDate.getDate() - (weeksBack * 7));
+                const weekDates = getWeekDates(weekDate);
+
+                let weekMeals = [];
+                weekDates.forEach((date, index) => {
+                    const dateKey = getDateKey(date, index);
+                    if (meals[dateKey]) {
+                        mealTypes.forEach(mealType => {
+                            if (meals[dateKey][mealType] && meals[dateKey][mealType].trim() !== '' && meals[dateKey][mealType] !== '-') {
+                                weekMeals.push({
+                                    day: weekDays[index],
+                                    mealType,
+                                    content: meals[dateKey][mealType],
+                                    dateKey,
+                                    dayIndex: index
+                                });
+                            }
+                        });
+                    }
+                });
+
+                if (weekMeals.length > 0) {
+                    weeksWithData.push({
+                        date: weekDate,
+                        weekDates: weekDates,
+                        meals: weekMeals
+                    });
+                }
+            }
+
+            if (weeksWithData.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state" style="padding: 30px; text-align: center;">
+                        <div style="font-size: 2rem; margin-bottom: 10px;">📅</div>
+                        <p>No previous weeks with meal data found</p>
+                        <p style="font-size: 12px; color: #a0aec0;">Plan some meals first, then you can copy them to future weeks</p>
+                    </div>
+                `;
+                return;
+            }
+
+            weeksWithData.forEach(week => {
+                const weekItem = document.createElement('div');
+                weekItem.className = 'week-item';
+
+                const start = week.weekDates[0];
+                const end = week.weekDates[6];
+                const weekRange = `${start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${end.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`;
+
+                weekItem.innerHTML = `
+                    <div>
+                        <div class="week-date">${weekRange}</div>
+                        <div style="font-size: 12px; color: #718096; margin-top: 2px;">
+                            ${getWeekAgo(week.date)} ago • ${week.meals.length} meals
+                        </div>
+                    </div>
+                `;
+
+                // Add individual meals
+                const mealsContainer = document.createElement('div');
+                mealsContainer.className = 'day-meals-container';
+                
+                week.meals.forEach(meal => {
+                    const mealItem = document.createElement('div');
+                    mealItem.className = 'day-meal-item';
+                    mealItem.onclick = () => toggleMealSelection(meal, mealItem);
+                    
+                    mealItem.innerHTML = `
+                        <div class="meal-info">
+                            <div class="meal-type-label">${meal.day} - ${meal.mealType}</div>
+                            <div class="meal-content">${meal.content}</div>
+                        </div>
+                    `;
+                    
+                    mealsContainer.appendChild(mealItem);
+                });
+
+                weekItem.appendChild(mealsContainer);
+                container.appendChild(weekItem);
+            });
+        }
+
+        function toggleMealSelection(meal, element) {
+            const index = selectedItemsToCopy.findIndex(item => 
+                item.dateKey === meal.dateKey && item.mealType === meal.mealType
+            );
+            
+            if (index > -1) {
+                selectedItemsToCopy.splice(index, 1);
+                element.classList.remove('selected');
+            } else {
+                selectedItemsToCopy.push(meal);
+                element.classList.add('selected');
+            }
+        }
+
+        function copySelectedItems() {
+            if (selectedItemsToCopy.length === 0) {
+                alert('Please select meals to copy');
+                return;
+            }
+
+            const currentWeekDates = getWeekDates(currentWeek);
+            let copiedCount = 0;
+
+            selectedItemsToCopy.forEach(meal => {
+                // Find corresponding day in current week
+                const targetDate = currentWeekDates[meal.dayIndex];
+                const targetKey = getDateKey(targetDate, meal.dayIndex);
+                
+                if (!meals[targetKey]) {
+                    meals[targetKey] = {};
+                }
+                
+                meals[targetKey][meal.mealType] = meal.content;
+                copiedCount++;
+            });
+
+            generateMealTable();
+            saveData();
+            closeCopyModal();
+
+            alert(`Successfully copied ${copiedCount} meals to the current week!`);
+        }
+
+        function getWeekAgo(date) {
+            const now = new Date();
+            const diffTime = Math.abs(now - date);
+            const diffWeeks = Math.ceil(diffTime / (1000 * 60 * 60 * 24 * 7));
+            return diffWeeks === 1 ? '1 week' : `${diffWeeks} weeks`;
+        }
+
+        // Enhanced shopping list functions
+        function extractIngredientsFromMeal(mealText) {
+            if (!mealText || mealText.trim() === '' || mealText === '-') return [];
+            
+            const meal = mealText.toLowerCase().trim();
+            const ingredients = [];
+            
+            // Check for known dish patterns
+            for (const [dish, dishIngredients] of Object.entries(ingredientPatterns)) {
+                if (meal.includes(dish)) {
+                    ingredients.push(...dishIngredients);
+                }
+            }
+            
+            // Extract individual ingredients from text
+            const parts = meal.split(/[+,&\s]+/).map(part => part.trim()).filter(part => part.length > 2);
+            
+            parts.forEach(part => {
+                // Skip common non-ingredient words
+                const skipWords = ['with', 'and', 'or', 'the', 'a', 'an', 'in', 'on', 'at', 'to', 'for', 'of', 'by'];
+                if (!skipWords.includes(part) && !ingredients.includes(part)) {
+                    
+                    // Extract base ingredients from common preparations
+                    if (part.includes('curry')) {
+                        const base = part.replace('curry', '').trim();
+                        if (base) ingredients.push(base);
+                    } else if (part.includes('fry')) {
+                        const base = part.replace('fry', '').trim();
+                        if (base) ingredients.push(base);
+                    } else if (part.includes('roast')) {
+                        const base = part.replace('roast', '').trim();
+                        if (base) ingredients.push(base);
+                    } else {
+                        ingredients.push(part);
+                    }
+                }
+            });
+            
+            return [...new Set(ingredients)]; // Remove duplicates
+        }
+
+        function generateShoppingList() {
+            const weekDates = getWeekDates(currentWeek);
+            const allIngredients = [];
+            
+            weekDates.forEach((date, index) => {
+                const dateKey = getDateKey(date, index);
+                if (meals[dateKey]) {
+                    mealTypes.forEach(mealType => {
+                        const meal = meals[dateKey][mealType];
+                        if (meal) {
+                            const ingredients = extractIngredientsFromMeal(meal);
+                            allIngredients.push(...ingredients);
+                        }
+                    });
+                }
+            });
+            
+            const uniqueIngredients = [...new Set(allIngredients)];
+            let addedCount = 0;
+            
+            uniqueIngredients.forEach(ingredient => {
+                if (!shoppingList.find(item => item.name.toLowerCase() === ingredient.toLowerCase())) {
+                    shoppingList.push({
+                        id: Date.now() + Math.random(),
+                        name: ingredient.charAt(0).toUpperCase() + ingredient.slice(1),
+                        completed: false,
+                        weekGenerated: getWeekKey(currentWeek)
+                    });
+                    addedCount++;
+                }
+            });
+            
+            updateShoppingDisplay();
+            saveData();
+            
+            if (addedCount > 0) {
+                alert(`✅ Added ${addedCount} ingredients to shopping list!`);
+                switchTab('shopping');
+            } else {
+                alert('ℹ️ No new ingredients found to add.');
+            }
+        }
+
+        function getWeekKey(date) {
+            const weekDates = getWeekDates(date);
+            return `${weekDates[0].getFullYear()}-W${Math.ceil(weekDates[0].getDate() / 7)}`;
+        }
+
+        function clearShoppingList() {
+            if (confirm('Clear all items from shopping list?')) {
+                shoppingList = [];
+                updateShoppingDisplay();
+                saveData();
+            }
+        }
+
+        function addToShoppingList() {
+            const input = document.getElementById('newIngredient');
+            const ingredient = input.value.trim();
+            
+            if (ingredient && !shoppingList.find(item => item.name.toLowerCase() === ingredient.toLowerCase())) {
+                shoppingList.push({
+                    id: Date.now(),
+                    name: ingredient,
+                    completed: false,
+                    weekGenerated: null
+                });
+                input.value = '';
+                updateShoppingDisplay();
+                saveData();
+            }
+        }
+
+        function handleIngredientKeyPress(event) {
+            if (event.key === 'Enter') {
+                addToShoppingList();
+            }
+        }
+
+        function toggleShoppingItem(id) {
+            const item = shoppingList.find(item => item.id === id);
+            if (item) {
+                item.completed = !item.completed;
+                updateShoppingDisplay();
+                saveData();
+            }
+        }
+
+        function editShoppingItem(id) {
+            const item = shoppingList.find(item => item.id === id);
+            const element = document.querySelector(`[data-item-id="${id}"] .shopping-text`);
+            
+            if (item && element) {
+                const currentText = item.name;
+                element.innerHTML = `<input type="text" class="shopping-text editing" value="${currentText}" onblur="saveShoppingEdit(${id})" onkeydown="handleShoppingEditKeyDown(event, ${id})">`;
+                element.querySelector('input').focus();
+            }
+        }
+
+        function saveShoppingEdit(id) {
+            const item = shoppingList.find(item => item.id === id);
+            const input = document.querySelector(`[data-item-id="${id}"] .shopping-text input`);
+            
+            if (item && input) {
+                const newValue = input.value.trim();
+                if (newValue) {
+                    item.name = newValue;
+                    saveData();
+                }
+                updateShoppingDisplay();
+            }
+        }
+
+        function handleShoppingEditKeyDown(event, id) {
+            if (event.key === 'Enter') {
+                saveShoppingEdit(id);
+            } else if (event.key === 'Escape') {
+                updateShoppingDisplay();
+            }
+        }
+
+        function removeShoppingItem(id) {
+            shoppingList = shoppingList.filter(item => item.id !== id);
+            selectedShoppingItems.delete(id);
+            updateShoppingDisplay();
+            saveData();
+        }
+
+        function toggleSelectMode() {
+            isSelectMode = !isSelectMode;
+            selectedShoppingItems.clear();
+            updateShoppingDisplay();
+            
+            const btn = document.querySelector('[onclick="toggleSelectMode()"]');
+            btn.textContent = isSelectMode ? '❌ Exit Select' : '📌 Select Mode';
+            
+            document.getElementById('deleteSelectedBtn').style.display = isSelectMode ? 'inline-block' : 'none';
+            document.getElementById('markSelectedBtn').style.display = isSelectMode ? 'inline-block' : 'none';
+        }
+
+        function toggleItemSelection(id) {
+            if (selectedShoppingItems.has(id)) {
+                selectedShoppingItems.delete(id);
+            } else {
+                selectedShoppingItems.add(id);
+            }
+            updateShoppingDisplay();
+        }
+
+        function deleteSelectedItems() {
+            if (selectedShoppingItems.size === 0) {
+                alert('No items selected');
+                return;
+            }
+            
+            if (confirm(`Delete ${selectedShoppingItems.size} selected items?`)) {
+                shoppingList = shoppingList.filter(item => !selectedShoppingItems.has(item.id));
+                selectedShoppingItems.clear();
+                updateShoppingDisplay();
+                saveData();
+            }
+        }
+
+        function markSelectedCompleted() {
+            if (selectedShoppingItems.size === 0) {
+                alert('No items selected');
+                return;
+            }
+            
+            shoppingList.forEach(item => {
+                if (selectedShoppingItems.has(item.id)) {
+                    item.completed = true;
+                }
+            });
+            
+            selectedShoppingItems.clear();
+            updateShoppingDisplay();
+            saveData();
+        }
+
+        function updateShoppingDisplay() {
+            const container = document.getElementById('shoppingItems');
+            const countElement = document.getElementById('shoppingCount');
+            
+            countElement.textContent = shoppingList.length;
+
+            if (shoppingList.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div style="font-size: 3rem; margin-bottom: 15px;">🛒</div>
+                        <p>Your shopping list is empty</p>
+                        <p style="font-size: 12px; color: #a0aec0;">Add items manually or generate from your meal plan</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = shoppingList.map(item => `
+                <div class="shopping-item ${item.completed ? 'completed' : ''} ${selectedShoppingItems.has(item.id) ? 'selected' : ''}" data-item-id="${item.id}">
+                    ${isSelectMode ? `
+                        <div class="shopping-select" onclick="toggleItemSelection(${item.id})">
+                            ${selectedShoppingItems.has(item.id) ? '✓' : ''}
+                        </div>
+                    ` : ''}
+                    <div class="shopping-checkbox" onclick="toggleShoppingItem(${item.id})">
+                        ${item.completed ? '✓' : ''}
+                    </div>
+                    <div class="shopping-text ${item.completed ? 'completed' : ''}" onclick="editShoppingItem(${item.id})">
+                        ${item.name}
+                    </div>
+                    <div class="shopping-actions">
+                        <button class="shopping-btn" onclick="editShoppingItem(${item.id})" title="Edit">✏️</button>
+                        <button class="shopping-btn" onclick="removeShoppingItem(${item.id})" title="Delete">🗑️</button>
+                    </div>
+                </div>
+            `).join('');
+
+            const completed = shoppingList.filter(item => item.completed).length;
+            const selected = selectedShoppingItems.size;
+            
+            let summaryText = `${completed} of ${shoppingList.length} items completed`;
+            if (isSelectMode && selected > 0) {
+                summaryText += ` • ${selected} selected`;
+            }
+            
+            container.innerHTML += `
+                <div class="summary">
+                    <strong>${summaryText}</strong>
+                </div>
+            `;
+        }
+
+        // Download as image function
+        async function downloadAsImage() {
+            try {
+                const btn = event.target;
+                const originalText = btn.textContent;
+                btn.textContent = '📸 Generating...';
+                btn.disabled = true;
+
+                // Create export container
+                const exportContainer = document.createElement('div');
+                exportContainer.style.cssText = `
+                    background: white;
+                    padding: 30px;
+                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                    width: 1000px;
+                    margin: 0 auto;
+                `;
+
+                // Add header
+                const weekRange = document.getElementById('weekRange').textContent;
+                const header = document.createElement('div');
+                header.style.cssText = `
+                    text-align: center;
+                    margin-bottom: 30px;
+                    border-bottom: 3px solid #e53e3e;
+                    padding-bottom: 20px;
+                `;
+                header.innerHTML = `
+                    <h1 style="color: #e53e3e; font-size: 28px; margin: 0 0 10px 0;">
+                        🍽️ Family Food Planner
+                    </h1>
+                    <p style="font-size: 18px; color: #2d3748; font-weight: bold; margin: 0;">
+                        ${weekRange}
+                    </p>
+                `;
+
+                // Clone and style table
+                const tableElement = document.getElementById('mealTable');
+                const tableClone = tableElement.cloneNode(true);
+                tableClone.style.cssText = `
+                    width: 100%;
+                    border-collapse: collapse;
+                    margin: 0;
+                    font-size: 14px;
+                    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+                    border-radius: 10px;
+                    overflow: hidden;
+                `;
+
+                // Clean up table for export
+                tableClone.querySelectorAll('.day-actions').forEach(el => el.remove());
+                
+                // Style cells
+                const cells = tableClone.querySelectorAll('th, td');
+                cells.forEach(cell => {
+                    cell.style.cssText = `
+                        border: 2px solid #e2e8f0;
+                        padding: 15px 10px;
+                        text-align: left;
+                        vertical-align: top;
+                        background: ${cell.tagName === 'TH' ? '#fed7d7' : 'white'};
+                        color: ${cell.classList.contains('meal-type') ? '#e53e3e' : '#2d3748'};
+                        font-weight: ${cell.tagName === 'TH' ? 'bold' : 'normal'};
+                        font-size: 13px;
+                        line-height: 1.4;
+                    `;
+
+                    // Clean content
+                    const mealText = cell.querySelector('.meal-text');
+                    if (mealText) {
+                        const placeholder = mealText.querySelector('.placeholder');
+                        if (placeholder) {
+                            mealText.textContent = '';
+                        }
+                    }
+                });
+
+                // Add footer
+                const footer = document.createElement('div');
+                footer.style.cssText = `
+                    text-align: center;
+                    margin-top: 30px;
+                    padding-top: 20px;
+                    border-top: 1px solid #e2e8f0;
+                    color: #718096;
+                    font-size: 12px;
+                `;
+                footer.innerHTML = `
+                    Generated on ${new Date().toLocaleDateString('en-US', { 
+                        year: 'numeric', 
+                        month: 'long', 
+                        day: 'numeric' 
+                    })} • Family Food Planner App${currentUser ? ' • by ' + currentUser.displayName : ''}
+                `;
+
+                // Assemble container
+                exportContainer.appendChild(header);
+                exportContainer.appendChild(tableClone);
+                exportContainer.appendChild(footer);
+
+                // Add to DOM temporarily
+                exportContainer.style.position = 'absolute';
+                exportContainer.style.left = '-10000px';
+                exportContainer.style.top = '0';
+                document.body.appendChild(exportContainer);
+
+                // Generate image
+                const canvas = await html2canvas(exportContainer, {
+                    backgroundColor: '#ffffff',
+                    scale: 2,
+                    useCORS: true,
+                    allowTaint: true,
+                    width: 1000,
+                    height: exportContainer.scrollHeight
+                });
+
+                // Cleanup
+                document.body.removeChild(exportContainer);
+
+                // Download
+                const link = document.createElement('a');
+                const weekRangeClean = weekRange.replace(/[^a-zA-Z0-9-]/g, '_');
+                link.download = `family-meal-plan-${weekRangeClean}.png`;
+                link.href = canvas.toDataURL('image/png');
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+
+                alert('✅ Family meal plan downloaded as image successfully!');
+
+            } catch (error) {
+                console.error('Error generating image:', error);
+                alert('❌ Sorry, there was an error generating the image. Please try again.');
+            } finally {
+                event.target.textContent = originalText;
+                event.target.disabled = false;
+            }
+        }
+
+        function clearWeekPlan() {
+            if (confirm('Are you sure you want to clear all meals for this week?')) {
+                const weekDates = getWeekDates(currentWeek);
+                weekDates.forEach((date, index) => {
+                    const dateKey = getDateKey(date, index);
+                    meals[dateKey] = {
+                        Breakfast: '',
+                        Lunch: '',
+                        Dinner: ''
+                    };
+                });
+                generateMealTable();
+                saveData();
+            }
+        }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById('plannerTab').style.display = tab === 'planner' ? 'block' : 'none';
+            document.getElementById('shoppingTab').style.display = tab === 'shopping' ? 'block' : 'none';
+        }
+
+        // Close modal when clicking outside
+        document.addEventListener('click', function(event) {
+            const modal = document.getElementById('copyModal');
+            if (event.target === modal) {
+                closeCopyModal();
+            }
+        });
+
+        // Initialize app when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🚀 Family Food Planner starting...');
+            
+            // Try to initialize Firebase
+            const firebaseLoaded = initializeFirebase();
+            
+            if (!firebaseLoaded) {
+                console.warn('⚠️ Firebase not available. Running in local-only mode.');
+                // Initialize without Firebase
+                init();
+                document.getElementById('loading-screen').style.display = 'none';
+                document.getElementById('app-container').style.display = 'block';
+                updateSyncStatus('error', 'Local mode only - no family sync');
+                
+                // Hide sign out button since there's no auth
+                const userInfo = document.querySelector('.user-info');
+                if (userInfo) userInfo.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
