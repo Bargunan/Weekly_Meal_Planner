@@ -1006,6 +1006,7 @@
                     <button class="nav-btn" onclick="generateShoppingList()">🛒 Generate Shopping List</button>
                     <button class="nav-btn warning" onclick="clearShoppingList()">🗑️ Clear Shopping List</button>
                     <button class="nav-btn" onclick="clearWeekPlan()">🗑️ Clear Week</button>
+                    <button class="nav-btn" onclick="createCustomFamily()" style="background: #805ad5;">👨‍👩‍👧‍👦 Set Family Name</button>
                 </div>
             </div>
 
@@ -1331,6 +1332,21 @@
             }
         }
 
+        // Family ID management - all family members share the same data
+        function getFamilyId() {
+            // For now, use a simple shared family ID
+            // In production, you might want users to create/join families
+            const savedFamilyId = localStorage.getItem('familyId');
+            if (savedFamilyId) {
+                return savedFamilyId;
+            }
+            
+            // Create or use default family ID
+            const defaultFamilyId = 'family_default_shared'; // All users share this by default
+            localStorage.setItem('familyId', defaultFamilyId);
+            return defaultFamilyId;
+        }
+
         // Firebase data sync functions
         async function loadFromFirebase() {
             if (!currentUser || !db) {
@@ -1340,9 +1356,10 @@
             
             try {
                 updateSyncStatus('syncing', 'Loading from cloud...');
-                console.log('📥 Loading data for user:', currentUser.uid);
+                const familyId = getFamilyId();
+                console.log('📥 Loading data for family:', familyId);
                 
-                const doc = await db.collection('families').doc(currentUser.uid).get();
+                const doc = await db.collection('families').doc(familyId).get();
                 console.log('📄 Document exists:', doc.exists);
                 
                 if (doc.exists) {
@@ -1365,8 +1382,12 @@
                             console.log('👥 Last updated by:', data.updatedBy);
                         }
                     }
+                    
+                    if (data.familyMembers) {
+                        console.log('👨‍👩‍👧‍👦 Family members:', data.familyMembers);
+                    }
                 } else {
-                    console.log('📝 No existing document found, will create new one on first save');
+                    console.log('📝 No existing family document found, will create new one on first save');
                 }
                 
                 updateSyncStatus('synced', 'Loaded from cloud');
@@ -1391,25 +1412,53 @@
             
             try {
                 updateSyncStatus('syncing', 'Syncing to cloud...');
-                console.log('☁️ Syncing data for user:', currentUser.uid);
+                const familyId = getFamilyId();
+                console.log('☁️ Syncing data for family:', familyId);
+                
+                // Get current family members list
+                const currentDoc = await db.collection('families').doc(familyId).get();
+                let familyMembers = [];
+                if (currentDoc.exists && currentDoc.data().familyMembers) {
+                    familyMembers = currentDoc.data().familyMembers;
+                }
+                
+                // Add current user to family members if not already there
+                const currentMember = {
+                    uid: currentUser.uid,
+                    name: currentUser.displayName || 'Family Member',
+                    email: currentUser.email,
+                    photo: currentUser.photoURL || '',
+                    lastActive: firebase.firestore.FieldValue.serverTimestamp()
+                };
+                
+                const existingMemberIndex = familyMembers.findIndex(member => member.uid === currentUser.uid);
+                if (existingMemberIndex >= 0) {
+                    familyMembers[existingMemberIndex] = currentMember;
+                } else {
+                    familyMembers.push(currentMember);
+                }
                 
                 const dataToSync = {
                     meals: meals,
                     shopping: shoppingList,
                     lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
-                    updatedBy: currentUser.displayName || 'Family Member'
+                    updatedBy: currentUser.displayName || 'Family Member',
+                    familyMembers: familyMembers,
+                    familyId: familyId
                 };
                 
                 console.log('📤 Data to sync:', {
+                    familyId: familyId,
                     mealsCount: Object.keys(meals).length,
                     shoppingCount: shoppingList.length,
-                    updatedBy: dataToSync.updatedBy
+                    updatedBy: dataToSync.updatedBy,
+                    familyMembersCount: familyMembers.length
                 });
                 
-                await db.collection('families').doc(currentUser.uid).set(dataToSync, { merge: true });
+                await db.collection('families').doc(familyId).set(dataToSync, { merge: true });
                 
                 console.log('✅ Data synced to Firebase successfully');
-                updateSyncStatus('synced', 'Synced with family');
+                updateSyncStatus('synced', `Synced with family (${familyMembers.length} members)`);
                 
             } catch (error) {
                 console.error('❌ Sync error:', error);
@@ -1457,25 +1506,51 @@
 
         // Debug info function
         function showDebugInfo() {
+            const familyId = getFamilyId();
             const debugInfo = {
                 'Firebase Initialized': firebaseInitialized,
                 'Current User': currentUser ? currentUser.displayName + ' (' + currentUser.uid + ')' : 'None',
+                'Family ID': familyId,
                 'Online Status': isOnline,
                 'Meals Count': Object.keys(meals).length,
                 'Shopping Items': shoppingList.length,
                 'Auth Available': !!auth,
                 'Database Available': !!db,
                 'Local Storage Meals': localStorage.getItem('foodPlannerMeals') ? 'Available' : 'Empty',
-                'Local Storage Shopping': localStorage.getItem('foodPlannerShopping') ? 'Available' : 'Empty'
+                'Local Storage Shopping': localStorage.getItem('foodPlannerShopping') ? 'Available' : 'Empty',
+                'Local Family ID': localStorage.getItem('familyId') || 'Not Set'
             };
             
             let debugText = '🐛 DEBUG INFO:\n\n';
+            debugText += '🔑 IMPORTANT: All family members should have the same Family ID for shared data!\n\n';
             for (const [key, value] of Object.entries(debugInfo)) {
                 debugText += `${key}: ${value}\n`;
             }
             
             console.log(debugText);
             alert(debugText);
+        }
+
+        // Function to create/join a custom family
+        function createCustomFamily() {
+            const familyName = prompt('Enter a unique family name (this will be shared with all family members):');
+            if (familyName && familyName.trim()) {
+                const customFamilyId = 'family_' + familyName.trim().toLowerCase().replace(/[^a-z0-9]/g, '_');
+                localStorage.setItem('familyId', customFamilyId);
+                
+                if (currentUser && firebaseInitialized) {
+                    // Load data from new family and sync current data
+                    loadFromFirebase().then(() => {
+                        generateMealTable();
+                        updateShoppingDisplay();
+                        alert(`✅ Switched to family: ${familyName}\nShare this family name with other family members!`);
+                    });
+                } else {
+                    alert(`✅ Family name set: ${familyName}\nSign in to sync with family members!`);
+                }
+                
+                console.log('👨‍👩‍👧‍👦 Custom family created:', customFamilyId);
+            }
         }
 
         // Network status monitoring
@@ -1546,18 +1621,21 @@
                 return;
             }
             
-            console.log('👂 Setting up realtime listener for user:', currentUser.uid);
+            const familyId = getFamilyId();
+            console.log('👂 Setting up realtime listener for family:', familyId);
             
-            const unsubscribe = db.collection('families').doc(currentUser.uid)
+            const unsubscribe = db.collection('families').doc(familyId)
                 .onSnapshot((doc) => {
                     console.log('📡 Received realtime update');
                     
                     if (doc.exists) {
                         const data = doc.data();
                         console.log('📊 Realtime data:', {
+                            familyId: data.familyId,
                             mealsCount: data.meals ? Object.keys(data.meals).length : 0,
                             shoppingCount: data.shopping ? data.shopping.length : 0,
                             updatedBy: data.updatedBy,
+                            familyMembersCount: data.familyMembers ? data.familyMembers.length : 0,
                             lastUpdated: data.lastUpdated
                         });
                         
@@ -1579,16 +1657,20 @@
                             generateMealTable();
                             updateShoppingDisplay();
                             
-                            // Show notification
-                            updateSyncStatus('synced', `Updated by ${data.updatedBy}`);
+                            // Show notification with family member count
+                            const memberCount = data.familyMembers ? data.familyMembers.length : 1;
+                            updateSyncStatus('synced', `Updated by ${data.updatedBy} (${memberCount} members)`);
                             setTimeout(() => {
-                                updateSyncStatus('synced', 'Synced with family');
+                                updateSyncStatus('synced', `Synced with family (${memberCount} members)`);
                             }, 3000);
                         } else {
                             console.log('👤 Update was from current user, no UI refresh needed');
+                            // Still update the sync status to show family member count
+                            const memberCount = data.familyMembers ? data.familyMembers.length : 1;
+                            updateSyncStatus('synced', `Synced with family (${memberCount} members)`);
                         }
                     } else {
-                        console.log('📄 Document does not exist in realtime listener');
+                        console.log('📄 Family document does not exist in realtime listener');
                     }
                 }, (error) => {
                     console.error('❌ Realtime listener error:', error);
