@@ -1192,7 +1192,7 @@
     </div>
 
     <script>
-        // Firebase Configuration
+        // Firebase Configuration with allowed users
         const firebaseConfig = {
             apiKey: "AIzaSyDicuf9DBTnEvoXK7WxCnOf8nb_u8hazcQ",
             authDomain: "meals-planner-weekly.firebaseapp.com",
@@ -1201,6 +1201,18 @@
             messagingSenderId: "303592781889",
             appId: "1:303592781889:web:e52068c3bde39e90c5aec0"
         };
+
+        // Define allowed users for your family (UPDATE THIS LIST)
+        const ALLOWED_USERS = [
+            'bargunanparthibarajan@gmail.com @gmail.com',        // Replace with actual family emails
+            'abe.nandhini@gmail.com',            // Add family member emails          // Add more as needed
+            // Add more family member emails here
+        ];
+
+        // Check if user is authorized
+        function isUserAuthorized(email) {
+            return ALLOWED_USERS.includes(email.toLowerCase());
+        }
 
         // Global variables
         let currentWeek = new Date();
@@ -1259,7 +1271,14 @@
                 const appContainer = document.getElementById('app-container');
                 
                 if (user) {
-                    // User signed in - show meal planner
+                    // Check if user is authorized
+                    if (!isUserAuthorized(user.email)) {
+                        console.log('❌ Unauthorized user:', user.email);
+                        showUnauthorizedUser(user);
+                        return;
+                    }
+                    
+                    // User signed in and authorized - show meal planner
                     currentUser = user;
                     console.log('✅ Welcome,', user.displayName);
                     
@@ -1294,6 +1313,55 @@
                     if (appContainer) appContainer.style.display = 'none';
                 }
             });
+        }
+
+        // Show unauthorized user message
+        function showUnauthorizedUser(user) {
+            const authContainer = document.getElementById('auth-container');
+            const loadingScreen = document.getElementById('loading-screen');
+            const appContainer = document.getElementById('app-container');
+            
+            if (loadingScreen) loadingScreen.style.display = 'none';
+            if (appContainer) appContainer.style.display = 'none';
+            if (authContainer) authContainer.style.display = 'flex';
+            
+            // Update auth container to show unauthorized message
+            authContainer.innerHTML = `
+                <div class="auth-card">
+                    <div class="auth-logo">🚫</div>
+                    <h1 class="auth-title" style="color: #e53e3e;">Access Restricted</h1>
+                    <p class="auth-subtitle">This family meal planner is private.</p>
+                    
+                    <div style="background: #fed7d7; padding: 20px; border-radius: 10px; margin: 20px 0;">
+                        <p style="color: #2d3748; margin-bottom: 10px;"><strong>Your account:</strong></p>
+                        <p style="color: #2d3748; font-size: 14px;">${user.email}</p>
+                        <p style="color: #2d3748; font-size: 14px; margin-top: 10px;">
+                            <strong>Status:</strong> Not authorized for this family
+                        </p>
+                    </div>
+                    
+                    <div style="text-align: left; margin-top: 20px;">
+                        <h3 style="color: #2d3748; margin-bottom: 10px;">📧 To get access:</h3>
+                        <p style="color: #718096; font-size: 14px; margin-bottom: 10px;">
+                            Contact a family member to add your email address to the allowed users list.
+                        </p>
+                        <p style="color: #718096; font-size: 14px;">
+                            They need to update the ALLOWED_USERS array in the app configuration.
+                        </p>
+                    </div>
+                    
+                    <button class="google-btn" onclick="signOut()" style="background: #718096; margin-top: 20px;">
+                        Sign Out & Try Different Account
+                    </button>
+                </div>
+            `;
+            
+            // Sign out the unauthorized user after 5 seconds
+            setTimeout(() => {
+                if (auth.currentUser && !isUserAuthorized(auth.currentUser.email)) {
+                    auth.signOut();
+                }
+            }, 5000);
         }
 
         // Firebase Authentication
@@ -1666,6 +1734,8 @@ For now, the app will work in local-only mode.`;
             const debugInfo = {
                 'Firebase Initialized': firebaseInitialized,
                 'Current User': currentUser ? currentUser.displayName + ' (' + currentUser.uid + ')' : 'None',
+                'User Email': currentUser ? currentUser.email : 'None',
+                'User Authorized': currentUser ? isUserAuthorized(currentUser.email) : 'N/A',
                 'Family ID': familyId,
                 'Online Status': isOnline,
                 'Meals Count': Object.keys(meals).length,
@@ -1674,7 +1744,8 @@ For now, the app will work in local-only mode.`;
                 'Database Available': !!db,
                 'Local Storage Meals': localStorage.getItem('foodPlannerMeals') ? 'Available' : 'Empty',
                 'Local Storage Shopping': localStorage.getItem('foodPlannerShopping') ? 'Available' : 'Empty',
-                'Local Family ID': localStorage.getItem('familyId') || 'Not Set'
+                'Local Family ID': localStorage.getItem('familyId') || 'Not Set',
+                'Allowed Users Count': ALLOWED_USERS.length
             };
             
             let debugText = '🐛 DEBUG INFO:\n\n';
@@ -1690,6 +1761,11 @@ For now, the app will work in local-only mode.`;
             debugText += '    }\n';
             debugText += '  }\n';
             debugText += '}\n\n';
+            debugText += '👥 ALLOWED USERS:\n';
+            ALLOWED_USERS.forEach((email, index) => {
+                debugText += `${index + 1}. ${email}\n`;
+            });
+            debugText += '\n';
             
             for (const [key, value] of Object.entries(debugInfo)) {
                 debugText += `${key}: ${value}\n`;
