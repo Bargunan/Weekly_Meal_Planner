@@ -987,6 +987,8 @@
                 <div class="sync-status">
                     <div id="sync-indicator" class="sync-indicator"></div>
                     <span id="sync-text">Synced with family</span>
+                    <button class="nav-btn" onclick="manualSync()" style="margin-left: 10px; padding: 4px 8px; font-size: 11px;">🔄 Force Sync</button>
+                    <button class="nav-btn secondary" onclick="showDebugInfo()" style="margin-left: 5px; padding: 4px 8px; font-size: 11px;">🐛 Debug</button>
                 </div>
                 
                 <div class="week-nav">
@@ -1230,6 +1232,9 @@
                     console.log('🔥 Firebase initialized successfully!');
                     console.log('👨‍👩‍👧‍👦 Ready for family collaboration!');
                     
+                    // Test Firebase connection
+                    console.log('🧪 Testing Firebase connection...');
+                    
                     // Setup auth state listener
                     setupAuthStateListener();
                     
@@ -1328,23 +1333,30 @@
 
         // Firebase data sync functions
         async function loadFromFirebase() {
-            if (!currentUser || !db) return;
+            if (!currentUser || !db) {
+                console.log('⚠️ Cannot load from Firebase: missing user or db');
+                return;
+            }
             
             try {
                 updateSyncStatus('syncing', 'Loading from cloud...');
+                console.log('📥 Loading data for user:', currentUser.uid);
                 
                 const doc = await db.collection('families').doc(currentUser.uid).get();
+                console.log('📄 Document exists:', doc.exists);
+                
                 if (doc.exists) {
                     const data = doc.data();
+                    console.log('📊 Raw Firebase data:', data);
                     
                     if (data.meals) {
                         meals = data.meals;
-                        console.log('📥 Loaded meals from Firebase');
+                        console.log('🍽️ Loaded meals from Firebase:', Object.keys(meals).length, 'entries');
                     }
                     
                     if (data.shopping) {
                         shoppingList = data.shopping;
-                        console.log('📥 Loaded shopping list from Firebase');
+                        console.log('🛒 Loaded shopping list from Firebase:', shoppingList.length, 'items');
                     }
                     
                     if (data.lastUpdated) {
@@ -1353,13 +1365,15 @@
                             console.log('👥 Last updated by:', data.updatedBy);
                         }
                     }
+                } else {
+                    console.log('📝 No existing document found, will create new one on first save');
                 }
                 
                 updateSyncStatus('synced', 'Loaded from cloud');
                 
             } catch (error) {
                 console.error('❌ Error loading from Firebase:', error);
-                updateSyncStatus('error', 'Failed to load from cloud');
+                updateSyncStatus('error', 'Failed to load from cloud: ' + error.message);
                 
                 // Fallback to local storage
                 loadDataLocal();
@@ -1367,24 +1381,39 @@
         }
 
         async function syncToFirebase() {
-            if (!currentUser || !isOnline || !db) return;
+            if (!currentUser || !isOnline || !db) {
+                console.log('⚠️ Cannot sync to Firebase: missing requirements');
+                console.log('- User:', !!currentUser);
+                console.log('- Online:', isOnline);
+                console.log('- Database:', !!db);
+                return;
+            }
             
             try {
                 updateSyncStatus('syncing', 'Syncing to cloud...');
+                console.log('☁️ Syncing data for user:', currentUser.uid);
                 
-                await db.collection('families').doc(currentUser.uid).set({
+                const dataToSync = {
                     meals: meals,
                     shopping: shoppingList,
                     lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
                     updatedBy: currentUser.displayName || 'Family Member'
-                }, { merge: true });
+                };
                 
-                console.log('☁️ Data synced to Firebase');
+                console.log('📤 Data to sync:', {
+                    mealsCount: Object.keys(meals).length,
+                    shoppingCount: shoppingList.length,
+                    updatedBy: dataToSync.updatedBy
+                });
+                
+                await db.collection('families').doc(currentUser.uid).set(dataToSync, { merge: true });
+                
+                console.log('✅ Data synced to Firebase successfully');
                 updateSyncStatus('synced', 'Synced with family');
                 
             } catch (error) {
                 console.error('❌ Sync error:', error);
-                updateSyncStatus('error', 'Sync failed');
+                updateSyncStatus('error', 'Sync failed: ' + error.message);
                 
                 // Save locally as backup
                 saveDataLocal();
@@ -1402,6 +1431,51 @@
             if (text) {
                 text.textContent = message;
             }
+            
+            console.log(`📊 Sync status: ${status} - ${message}`);
+        }
+
+        // Manual sync function for debugging
+        async function manualSync() {
+            console.log('🔄 Manual sync triggered');
+            updateSyncStatus('syncing', 'Manual sync in progress...');
+            
+            if (!currentUser) {
+                alert('Please sign in first to sync data');
+                updateSyncStatus('error', 'Not signed in');
+                return;
+            }
+            
+            try {
+                await syncToFirebase();
+                alert('✅ Manual sync completed successfully!');
+            } catch (error) {
+                console.error('❌ Manual sync failed:', error);
+                alert('❌ Manual sync failed: ' + error.message);
+            }
+        }
+
+        // Debug info function
+        function showDebugInfo() {
+            const debugInfo = {
+                'Firebase Initialized': firebaseInitialized,
+                'Current User': currentUser ? currentUser.displayName + ' (' + currentUser.uid + ')' : 'None',
+                'Online Status': isOnline,
+                'Meals Count': Object.keys(meals).length,
+                'Shopping Items': shoppingList.length,
+                'Auth Available': !!auth,
+                'Database Available': !!db,
+                'Local Storage Meals': localStorage.getItem('foodPlannerMeals') ? 'Available' : 'Empty',
+                'Local Storage Shopping': localStorage.getItem('foodPlannerShopping') ? 'Available' : 'Empty'
+            };
+            
+            let debugText = '🐛 DEBUG INFO:\n\n';
+            for (const [key, value] of Object.entries(debugInfo)) {
+                debugText += `${key}: ${value}\n`;
+            }
+            
+            console.log(debugText);
+            alert(debugText);
         }
 
         // Network status monitoring
@@ -1419,12 +1493,21 @@
 
         // Enhanced save function with Firebase sync
         function saveData() {
+            console.log('💾 Saving data...');
+            
             // Save locally first for immediate response
             saveDataLocal();
+            console.log('✅ Saved to local storage');
             
             // Then sync to Firebase if available
             if (currentUser && firebaseInitialized) {
+                console.log('🔄 Attempting Firebase sync...');
                 syncToFirebase();
+            } else {
+                console.log('⚠️ Firebase sync skipped:', {
+                    user: !!currentUser,
+                    initialized: firebaseInitialized
+                });
             }
         }
 
@@ -1458,20 +1541,39 @@
 
         // Real-time listener for family updates
         function setupRealtimeListener() {
-            if (!currentUser || !db) return;
+            if (!currentUser || !db) {
+                console.log('⚠️ Cannot setup realtime listener: missing requirements');
+                return;
+            }
             
-            db.collection('families').doc(currentUser.uid)
+            console.log('👂 Setting up realtime listener for user:', currentUser.uid);
+            
+            const unsubscribe = db.collection('families').doc(currentUser.uid)
                 .onSnapshot((doc) => {
+                    console.log('📡 Received realtime update');
+                    
                     if (doc.exists) {
                         const data = doc.data();
+                        console.log('📊 Realtime data:', {
+                            mealsCount: data.meals ? Object.keys(data.meals).length : 0,
+                            shoppingCount: data.shopping ? data.shopping.length : 0,
+                            updatedBy: data.updatedBy,
+                            lastUpdated: data.lastUpdated
+                        });
                         
                         // Check if update was from another user
                         if (data.updatedBy && data.updatedBy !== currentUser.displayName) {
                             console.log('👥 Family member updated data:', data.updatedBy);
                             
                             // Update local data
-                            if (data.meals) meals = data.meals;
-                            if (data.shopping) shoppingList = data.shopping;
+                            if (data.meals) {
+                                meals = data.meals;
+                                console.log('🔄 Updated meals from family member');
+                            }
+                            if (data.shopping) {
+                                shoppingList = data.shopping;
+                                console.log('🔄 Updated shopping list from family member');
+                            }
                             
                             // Refresh UI
                             generateMealTable();
@@ -1482,12 +1584,19 @@
                             setTimeout(() => {
                                 updateSyncStatus('synced', 'Synced with family');
                             }, 3000);
+                        } else {
+                            console.log('👤 Update was from current user, no UI refresh needed');
                         }
+                    } else {
+                        console.log('📄 Document does not exist in realtime listener');
                     }
                 }, (error) => {
                     console.error('❌ Realtime listener error:', error);
-                    updateSyncStatus('error', 'Connection lost');
+                    updateSyncStatus('error', 'Connection lost: ' + error.message);
                 });
+            
+            // Store unsubscribe function for cleanup
+            window.firestoreUnsubscribe = unsubscribe;
         }
 
         // Ingredient extraction patterns - improve intelligence
