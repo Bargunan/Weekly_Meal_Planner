@@ -234,10 +234,10 @@
             background: #e53e3e;
             color: white;
             border: none;
-            padding: 10px 15px;
-            border-radius: 8px;
+            padding: 8px 12px;
+            border-radius: 6px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 12px;
             transition: all 0.3s ease;
         }
 
@@ -934,7 +934,7 @@
     <div id="auth-container">
         <div class="auth-card">
             <div class="auth-logo">👨‍👩‍👧‍👦</div>
-            <h1 class="auth-title">Family Food Planner</h1>
+            <h1 class="auth-title">Pargunan & Abenandhini's Meal Planner</h1>
             <p class="auth-subtitle">Plan meals together, shop smarter</p>
             
             <button class="google-btn" onclick="signInWithGoogle()">
@@ -974,7 +974,7 @@
         <div class="container">
             <!-- Header -->
             <div class="header">
-                <h1>🍽️ Family Food Planner</h1>
+                <h1>🍽️ Pargunan & Abenandhini's Weekly Meal Planner</h1>
                 
                 <!-- User Info -->
                 <div class="user-info">
@@ -987,9 +987,6 @@
                 <div class="sync-status">
                     <div id="sync-indicator" class="sync-indicator"></div>
                     <span id="sync-text">Synced with family</span>
-                    <button class="nav-btn" onclick="manualSync()" style="margin-left: 10px; padding: 4px 8px; font-size: 11px;">🔄 Force Sync</button>
-                    <button class="nav-btn warning" onclick="cleanFirebaseData()" style="margin-left: 5px; padding: 4px 8px; font-size: 11px;">🧹 Clean Data</button>
-                    <button class="nav-btn secondary" onclick="showDebugInfo()" style="margin-left: 5px; padding: 4px 8px; font-size: 11px;">🐛 Debug</button>
                 </div>
                 
                 <div class="week-nav">
@@ -1007,7 +1004,6 @@
                     <button class="nav-btn" onclick="generateShoppingList()">🛒 Generate Shopping List</button>
                     <button class="nav-btn warning" onclick="clearShoppingList()">🗑️ Clear Shopping List</button>
                     <button class="nav-btn" onclick="clearWeekPlan()">🗑️ Clear Week</button>
-                    <button class="nav-btn" onclick="createCustomFamily()" style="background: #805ad5;">👨‍👩‍👧‍👦 Set Family Name</button>
                 </div>
             </div>
 
@@ -1204,14 +1200,73 @@
 
         // Define allowed users for your family (UPDATE THIS LIST)
         const ALLOWED_USERS = [
-            'bargunanparthibarajan@gmail.com',        // Replace with actual family emails
-            'abe.nandhini@gmail.com',            // Add family member emails          // Add more as needed
+            'your-email@gmail.com',        // Replace with actual family emails
+            'spouse@gmail.com',            // Add family member emails
+            'child@gmail.com',             // Add more as needed
             // Add more family member emails here
         ];
 
-        // Check if user is authorized
+        // Guest access configuration
+        const GUEST_ACCESS_DURATION = 10 * 60 * 1000; // 10 minutes in milliseconds
+        let guestAccessTimer = null;
+
+        // Check if user is authorized (permanent access)
         function isUserAuthorized(email) {
             return ALLOWED_USERS.includes(email.toLowerCase());
+        }
+
+        // Check if user has active guest access
+        function hasActiveGuestAccess(email) {
+            const guestData = localStorage.getItem(`guest_${email}`);
+            if (!guestData) return false;
+            
+            try {
+                const { startTime, duration } = JSON.parse(guestData);
+                const timeLeft = (startTime + duration) - Date.now();
+                return timeLeft > 0;
+            } catch (error) {
+                return false;
+            }
+        }
+
+        // Grant guest access
+        function grantGuestAccess(email) {
+            const guestData = {
+                startTime: Date.now(),
+                duration: GUEST_ACCESS_DURATION
+            };
+            localStorage.setItem(`guest_${email}`, JSON.stringify(guestData));
+            
+            // Set up timer to automatically sign out when access expires
+            if (guestAccessTimer) clearTimeout(guestAccessTimer);
+            guestAccessTimer = setTimeout(() => {
+                if (currentUser && !isUserAuthorized(currentUser.email)) {
+                    showGuestAccessExpired();
+                }
+            }, GUEST_ACCESS_DURATION);
+            
+            return guestData;
+        }
+
+        // Get remaining guest access time
+        function getRemainingGuestTime(email) {
+            const guestData = localStorage.getItem(`guest_${email}`);
+            if (!guestData) return 0;
+            
+            try {
+                const { startTime, duration } = JSON.parse(guestData);
+                const timeLeft = (startTime + duration) - Date.now();
+                return Math.max(0, timeLeft);
+            } catch (error) {
+                return 0;
+            }
+        }
+
+        // Format time for display
+        function formatTime(milliseconds) {
+            const minutes = Math.floor(milliseconds / 60000);
+            const seconds = Math.floor((milliseconds % 60000) / 1000);
+            return `${minutes}m ${seconds}s`;
         }
 
         // Global variables
@@ -1271,39 +1326,41 @@
                 const appContainer = document.getElementById('app-container');
                 
                 if (user) {
-                    // Check if user is authorized
-                    if (!isUserAuthorized(user.email)) {
+                    const isAuthorized = isUserAuthorized(user.email);
+                    const hasGuestAccess = hasActiveGuestAccess(user.email);
+                    
+                    if (isAuthorized || hasGuestAccess) {
+                        // User has access (permanent or guest) - show meal planner
+                        currentUser = user;
+                        console.log('✅ Welcome,', user.displayName, isAuthorized ? '(Family Member)' : '(Guest)');
+                        
+                        if (loadingScreen) loadingScreen.style.display = 'none';
+                        if (authContainer) authContainer.style.display = 'none';
+                        if (appContainer) appContainer.style.display = 'block';
+                        
+                        // Update user info in header
+                        updateUserInterface(user, isAuthorized);
+                        
+                        // Load data and initialize
+                        loadFromFirebase().then(() => {
+                            init();
+                            const statusText = isAuthorized ? 'Synced with family' : 'Guest access (read-only)';
+                            updateSyncStatus('synced', statusText);
+                            if (isAuthorized) {
+                                setupRealtimeListener();
+                            }
+                        });
+                        
+                        // Set up guest access timer if needed
+                        if (!isAuthorized && hasGuestAccess) {
+                            setupGuestAccessTimer(user.email);
+                        }
+                        
+                    } else {
+                        // User not authorized and no guest access - show options
                         console.log('❌ Unauthorized user:', user.email);
                         showUnauthorizedUser(user);
-                        return;
                     }
-                    
-                    // User signed in and authorized - show meal planner
-                    currentUser = user;
-                    console.log('✅ Welcome,', user.displayName);
-                    
-                    if (loadingScreen) loadingScreen.style.display = 'none';
-                    if (authContainer) authContainer.style.display = 'none';
-                    if (appContainer) appContainer.style.display = 'block';
-                    
-                    // Update user info in header
-                    const userName = document.getElementById('user-name');
-                    const userPhoto = document.getElementById('user-photo');
-                    
-                    if (userName) userName.textContent = user.displayName || 'Family Member';
-                    if (userPhoto && user.photoURL) {
-                        userPhoto.src = user.photoURL;
-                        userPhoto.style.display = 'block';
-                    } else if (userPhoto) {
-                        userPhoto.style.display = 'none';
-                    }
-                    
-                    // Load data from Firebase first, then init app
-                    loadFromFirebase().then(() => {
-                        init();
-                        updateSyncStatus('synced', 'Synced with family');
-                        setupRealtimeListener();
-                    });
                     
                 } else {
                     // User not signed in - show auth screen
@@ -1311,11 +1368,77 @@
                     if (loadingScreen) loadingScreen.style.display = 'none';
                     if (authContainer) authContainer.style.display = 'flex';
                     if (appContainer) appContainer.style.display = 'none';
+                    
+                    // Clear any guest access timers
+                    if (guestAccessTimer) {
+                        clearTimeout(guestAccessTimer);
+                        guestAccessTimer = null;
+                    }
                 }
             });
         }
 
-        // Show unauthorized user message
+        // Update user interface based on access level
+        function updateUserInterface(user, isAuthorized) {
+            const userName = document.getElementById('user-name');
+            const userPhoto = document.getElementById('user-photo');
+            
+            if (userName) {
+                const displayName = user.displayName || 'User';
+                const accessType = isAuthorized ? 'Family Member' : 'Guest';
+                userName.textContent = `${displayName} (${accessType})`;
+            }
+            
+            if (userPhoto && user.photoURL) {
+                userPhoto.src = user.photoURL;
+                userPhoto.style.display = 'block';
+            } else if (userPhoto) {
+                userPhoto.style.display = 'none';
+            }
+            
+            // Add guest access indicator if needed
+            if (!isAuthorized) {
+                const timeLeft = getRemainingGuestTime(user.email);
+                updateGuestAccessDisplay(timeLeft);
+            }
+        }
+
+        // Set up guest access timer and countdown
+        function setupGuestAccessTimer(email) {
+            const updateCountdown = () => {
+                const timeLeft = getRemainingGuestTime(email);
+                if (timeLeft > 0) {
+                    updateGuestAccessDisplay(timeLeft);
+                    setTimeout(updateCountdown, 1000); // Update every second
+                } else {
+                    showGuestAccessExpired();
+                }
+            };
+            
+            updateCountdown();
+        }
+
+        // Update guest access display
+        function updateGuestAccessDisplay(timeLeft) {
+            const syncText = document.getElementById('sync-text');
+            if (syncText && timeLeft > 0) {
+                syncText.textContent = `Guest access: ${formatTime(timeLeft)} remaining`;
+                
+                // Change indicator color based on time left
+                const indicator = document.getElementById('sync-indicator');
+                if (indicator) {
+                    if (timeLeft < 2 * 60 * 1000) { // Less than 2 minutes
+                        indicator.className = 'sync-indicator error';
+                    } else if (timeLeft < 5 * 60 * 1000) { // Less than 5 minutes
+                        indicator.className = 'sync-indicator syncing';
+                    } else {
+                        indicator.className = 'sync-indicator';
+                    }
+                }
+            }
+        }
+
+        // Show unauthorized user message with guest access option
         function showUnauthorizedUser(user) {
             const authContainer = document.getElementById('auth-container');
             const loadingScreen = document.getElementById('loading-screen');
@@ -1325,12 +1448,12 @@
             if (appContainer) appContainer.style.display = 'none';
             if (authContainer) authContainer.style.display = 'flex';
             
-            // Update auth container to show unauthorized message
+            // Update auth container to show unauthorized message with guest option
             authContainer.innerHTML = `
                 <div class="auth-card">
                     <div class="auth-logo">🚫</div>
                     <h1 class="auth-title" style="color: #e53e3e;">Access Restricted</h1>
-                    <p class="auth-subtitle">This family meal planner is private.</p>
+                    <p class="auth-subtitle">This meal planner is private to Pargunan & Abenandhini's family.</p>
                     
                     <div style="background: #fed7d7; padding: 20px; border-radius: 10px; margin: 20px 0;">
                         <p style="color: #2d3748; margin-bottom: 10px;"><strong>Your account:</strong></p>
@@ -1340,13 +1463,20 @@
                         </p>
                     </div>
                     
-                    <div style="text-align: left; margin-top: 20px;">
-                        <h3 style="color: #2d3748; margin-bottom: 10px;">📧 To get access:</h3>
-                        <p style="color: #718096; font-size: 14px; margin-bottom: 10px;">
-                            Contact a family member to add your email address to the allowed users list.
+                    <div style="background: #e6fffa; padding: 20px; border-radius: 10px; margin: 20px 0; border-left: 4px solid #38b2ac;">
+                        <h3 style="color: #2d3748; margin-bottom: 10px;">👀 Guest Access Available</h3>
+                        <p style="color: #2d3748; font-size: 14px; margin-bottom: 15px;">
+                            You can view the meal plan as a guest for <strong>10 minutes</strong> (read-only access).
                         </p>
-                        <p style="color: #718096; font-size: 14px;">
-                            They need to update the ALLOWED_USERS array in the app configuration.
+                        <button class="google-btn" onclick="grantGuestAccess('${user.email}'); location.reload();" style="background: #38b2ac;">
+                            🕐 Get 10-Minute Guest Access
+                        </button>
+                    </div>
+                    
+                    <div style="text-align: left; margin-top: 20px;">
+                        <h3 style="color: #2d3748; margin-bottom: 10px;">📧 For permanent access:</h3>
+                        <p style="color: #718096; font-size: 14px; margin-bottom: 10px;">
+                            Contact Pargunan or Abenandhini to add your email address to the family member list.
                         </p>
                     </div>
                     
@@ -1355,13 +1485,52 @@
                     </button>
                 </div>
             `;
+        }
+
+        // Show guest access expired message
+        function showGuestAccessExpired() {
+            const authContainer = document.getElementById('auth-container');
+            const appContainer = document.getElementById('app-container');
             
-            // Sign out the unauthorized user after 5 seconds
+            if (appContainer) appContainer.style.display = 'none';
+            if (authContainer) authContainer.style.display = 'flex';
+            
+            const userEmail = currentUser ? currentUser.email : '';
+            
+            authContainer.innerHTML = `
+                <div class="auth-card">
+                    <div class="auth-logo">⏰</div>
+                    <h1 class="auth-title" style="color: #d69e2e;">Guest Access Expired</h1>
+                    <p class="auth-subtitle">Your 10-minute guest access has expired.</p>
+                    
+                    <div style="background: #fef5e7; padding: 20px; border-radius: 10px; margin: 20px 0; border-left: 4px solid #d69e2e;">
+                        <p style="color: #2d3748; font-size: 14px; margin-bottom: 15px;">
+                            Thank you for visiting Pargunan & Abenandhini's meal planner!
+                        </p>
+                        <button class="google-btn" onclick="grantGuestAccess('${userEmail}'); location.reload();" style="background: #38b2ac;">
+                            🔄 Get Another 10 Minutes
+                        </button>
+                    </div>
+                    
+                    <div style="text-align: left; margin-top: 20px;">
+                        <h3 style="color: #2d3748; margin-bottom: 10px;">📧 Want permanent access?</h3>
+                        <p style="color: #718096; font-size: 14px;">
+                            Contact the family to be added as a permanent member.
+                        </p>
+                    </div>
+                    
+                    <button class="google-btn" onclick="signOut()" style="background: #718096; margin-top: 20px;">
+                        Sign Out
+                    </button>
+                </div>
+            `;
+            
+            // Auto sign out after 30 seconds
             setTimeout(() => {
-                if (auth.currentUser && !isUserAuthorized(auth.currentUser.email)) {
+                if (auth.currentUser) {
                     auth.signOut();
                 }
-            }, 5000);
+            }, 30000);
         }
 
         // Firebase Authentication
@@ -1810,18 +1979,21 @@ For now, the app will work in local-only mode.`;
             updateSyncStatus('error', 'Offline mode');
         });
 
-        // Enhanced save function with Firebase sync
+        // Enhanced save function with Firebase sync (restricted for guests)
         function saveData() {
             console.log('💾 Saving data...');
             
-            // Save locally first for immediate response
+            // Always save locally first for immediate response
             saveDataLocal();
             console.log('✅ Saved to local storage');
             
-            // Then sync to Firebase if available
-            if (currentUser && firebaseInitialized) {
+            // Only sync to Firebase if user is a family member (not guest)
+            if (currentUser && firebaseInitialized && isUserAuthorized(currentUser.email)) {
                 console.log('🔄 Attempting Firebase sync...');
                 syncToFirebase();
+            } else if (currentUser && !isUserAuthorized(currentUser.email)) {
+                console.log('⚠️ Guest user - Firebase sync skipped (read-only access)');
+                updateSyncStatus('synced', 'Guest access (read-only)');
             } else {
                 console.log('⚠️ Firebase sync skipped:', {
                     user: !!currentUser,
@@ -2780,7 +2952,7 @@ For now, the app will work in local-only mode.`;
                 `;
                 header.innerHTML = `
                     <h1 style="color: #e53e3e; font-size: 28px; margin: 0 0 10px 0;">
-                        🍽️ Family Food Planner
+                        🍽️ Pargunan & Abenandhini's Weekly Meal Planner
                     </h1>
                     <p style="font-size: 18px; color: #2d3748; font-weight: bold; margin: 0;">
                         ${weekRange}
@@ -2843,7 +3015,7 @@ For now, the app will work in local-only mode.`;
                         year: 'numeric', 
                         month: 'long', 
                         day: 'numeric' 
-                    })} • Family Food Planner App${currentUser ? ' • by ' + currentUser.displayName : ''}
+                    })} • Pargunan & Abenandhini's Meal Planner${currentUser ? ' • by ' + currentUser.displayName : ''}
                 `;
 
                 // Assemble container
