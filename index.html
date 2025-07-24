@@ -1394,7 +1394,13 @@
                 
             } catch (error) {
                 console.error('❌ Error loading from Firebase:', error);
-                updateSyncStatus('error', 'Failed to load from cloud: ' + error.message);
+                
+                if (error.code === 'permission-denied') {
+                    updateSyncStatus('error', 'Permission denied - check Firebase rules');
+                    showPermissionError();
+                } else {
+                    updateSyncStatus('error', 'Failed to load from cloud: ' + error.message);
+                }
                 
                 // Fallback to local storage
                 loadDataLocal();
@@ -1428,7 +1434,7 @@
                     name: currentUser.displayName || 'Family Member',
                     email: currentUser.email,
                     photo: currentUser.photoURL || '',
-                    lastActive: firebase.firestore.FieldValue.serverTimestamp()
+                    lastActive: new Date().toISOString() // Use ISO string instead of server timestamp
                 };
                 
                 const existingMemberIndex = familyMembers.findIndex(member => member.uid === currentUser.uid);
@@ -1462,11 +1468,48 @@
                 
             } catch (error) {
                 console.error('❌ Sync error:', error);
-                updateSyncStatus('error', 'Sync failed: ' + error.message);
+                
+                if (error.code === 'permission-denied') {
+                    updateSyncStatus('error', 'Permission denied - check Firebase rules');
+                    showPermissionError();
+                } else {
+                    updateSyncStatus('error', 'Sync failed: ' + error.message);
+                }
                 
                 // Save locally as backup
                 saveDataLocal();
             }
+        }
+
+        // Show permission error with instructions
+        function showPermissionError() {
+            const message = `🚨 FIREBASE PERMISSION ERROR
+
+Your Firebase Firestore security rules are blocking access.
+
+SOLUTION:
+1. Go to: https://console.firebase.google.com
+2. Select your project: meals-planner-weekly
+3. Go to: Firestore Database → Rules
+4. Replace the rules with:
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /families/{document} {
+      allow read, write: if request.auth != null;
+    }
+  }
+}
+
+5. Click "Publish"
+
+This allows any authenticated user to read/write family data.
+
+For now, the app will work in local-only mode.`;
+
+            console.error(message);
+            alert(message);
         }
 
         function updateSyncStatus(status, message) {
@@ -1523,6 +1566,18 @@
             
             let debugText = '🐛 DEBUG INFO:\n\n';
             debugText += '🔑 IMPORTANT: All family members should have the same Family ID for shared data!\n\n';
+            debugText += '🚨 PERMISSIONS ERROR SOLUTION:\n';
+            debugText += 'Go to Firebase Console → Firestore Database → Rules\n';
+            debugText += 'Replace rules with:\n\n';
+            debugText += 'rules_version = \'2\';\n';
+            debugText += 'service cloud.firestore {\n';
+            debugText += '  match /databases/{database}/documents {\n';
+            debugText += '    match /families/{document} {\n';
+            debugText += '      allow read, write: if request.auth != null;\n';
+            debugText += '    }\n';
+            debugText += '  }\n';
+            debugText += '}\n\n';
+            
             for (const [key, value] of Object.entries(debugInfo)) {
                 debugText += `${key}: ${value}\n`;
             }
