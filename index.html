@@ -988,6 +988,7 @@
                     <div id="sync-indicator" class="sync-indicator"></div>
                     <span id="sync-text">Synced with family</span>
                     <button class="nav-btn" onclick="manualSync()" style="margin-left: 10px; padding: 4px 8px; font-size: 11px;">🔄 Force Sync</button>
+                    <button class="nav-btn warning" onclick="cleanFirebaseData()" style="margin-left: 5px; padding: 4px 8px; font-size: 11px;">🧹 Clean Data</button>
                     <button class="nav-btn secondary" onclick="showDebugInfo()" style="margin-left: 5px; padding: 4px 8px; font-size: 11px;">🐛 Debug</button>
                 </div>
                 
@@ -1421,18 +1422,23 @@
                 const familyId = getFamilyId();
                 console.log('☁️ Syncing data for family:', familyId);
                 
-                // Get current family members list
-                const currentDoc = await db.collection('families').doc(familyId).get();
+                // Get current family members list (safely handle existing data)
                 let familyMembers = [];
-                if (currentDoc.exists && currentDoc.data().familyMembers) {
-                    familyMembers = currentDoc.data().familyMembers;
+                try {
+                    const currentDoc = await db.collection('families').doc(familyId).get();
+                    if (currentDoc.exists && currentDoc.data().familyMembers) {
+                        familyMembers = currentDoc.data().familyMembers;
+                    }
+                } catch (docError) {
+                    console.log('⚠️ Could not load existing family members, starting fresh');
+                    familyMembers = [];
                 }
                 
                 // Add current user to family members if not already there
                 const currentMember = {
                     uid: currentUser.uid,
                     name: currentUser.displayName || 'Family Member',
-                    email: currentUser.email,
+                    email: currentUser.email || '',
                     photo: currentUser.photoURL || '',
                     lastActive: new Date().toISOString() // Use ISO string instead of server timestamp
                 };
@@ -1444,9 +1450,19 @@
                     familyMembers.push(currentMember);
                 }
                 
+                // Clean shopping list to ensure no server timestamps
+                const cleanShoppingList = shoppingList.map(item => ({
+                    id: item.id,
+                    name: item.name,
+                    completed: item.completed || false,
+                    weekGenerated: item.weekGenerated || null,
+                    // Remove any potential server timestamp fields
+                    ...(item.createdAt && typeof item.createdAt === 'string' ? { createdAt: item.createdAt } : {})
+                }));
+                
                 const dataToSync = {
-                    meals: meals,
-                    shopping: shoppingList,
+                    meals: meals || {},
+                    shopping: cleanShoppingList,
                     lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
                     updatedBy: currentUser.displayName || 'Family Member',
                     familyMembers: familyMembers,
@@ -1455,12 +1471,13 @@
                 
                 console.log('📤 Data to sync:', {
                     familyId: familyId,
-                    mealsCount: Object.keys(meals).length,
-                    shoppingCount: shoppingList.length,
+                    mealsCount: Object.keys(meals || {}).length,
+                    shoppingCount: cleanShoppingList.length,
                     updatedBy: dataToSync.updatedBy,
                     familyMembersCount: familyMembers.length
                 });
                 
+                // Use set with merge to overwrite any problematic existing data
                 await db.collection('families').doc(familyId).set(dataToSync, { merge: true });
                 
                 console.log('✅ Data synced to Firebase successfully');
@@ -1472,12 +1489,55 @@
                 if (error.code === 'permission-denied') {
                     updateSyncStatus('error', 'Permission denied - check Firebase rules');
                     showPermissionError();
+                } else if (error.message && error.message.includes('FieldValue.serverTimestamp()')) {
+                    // Handle server timestamp errors by clearing the document and retrying
+                    console.log('🔄 Attempting to clear corrupted data and retry...');
+                    await clearAndRetrySync(familyId);
                 } else {
                     updateSyncStatus('error', 'Sync failed: ' + error.message);
                 }
                 
                 // Save locally as backup
                 saveDataLocal();
+            }
+        }
+
+        // Helper function to clear corrupted data and retry sync
+        async function clearAndRetrySync(familyId) {
+            try {
+                updateSyncStatus('syncing', 'Clearing corrupted data...');
+                
+                // Create completely clean data structure
+                const cleanData = {
+                    meals: meals || {},
+                    shopping: (shoppingList || []).map(item => ({
+                        id: item.id,
+                        name: item.name,
+                        completed: Boolean(item.completed),
+                        weekGenerated: item.weekGenerated || null
+                    })),
+                    lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
+                    updatedBy: currentUser.displayName || 'Family Member',
+                    familyMembers: [{
+                        uid: currentUser.uid,
+                        name: currentUser.displayName || 'Family Member',
+                        email: currentUser.email || '',
+                        photo: currentUser.photoURL || '',
+                        lastActive: new Date().toISOString()
+                    }],
+                    familyId: familyId
+                };
+                
+                // Delete the document first, then create fresh
+                await db.collection('families').doc(familyId).delete();
+                await db.collection('families').doc(familyId).set(cleanData);
+                
+                console.log('✅ Data cleaned and synced successfully');
+                updateSyncStatus('synced', 'Synced with family (clean data)');
+                
+            } catch (retryError) {
+                console.error('❌ Retry sync also failed:', retryError);
+                updateSyncStatus('error', 'Cleanup failed: ' + retryError.message);
             }
         }
 
@@ -1544,6 +1604,59 @@ For now, the app will work in local-only mode.`;
             } catch (error) {
                 console.error('❌ Manual sync failed:', error);
                 alert('❌ Manual sync failed: ' + error.message);
+            }
+        }
+
+        // Function to clean Firebase data if corrupted
+        async function cleanFirebaseData() {
+            if (!currentUser || !db) {
+                alert('Please sign in first');
+                return;
+            }
+            
+            if (!confirm('⚠️ This will clear all Firebase data and upload fresh data from this device. Continue?')) {
+                return;
+            }
+            
+            try {
+                updateSyncStatus('syncing', 'Cleaning Firebase data...');
+                const familyId = getFamilyId();
+                
+                // Delete existing document
+                await db.collection('families').doc(familyId).delete();
+                console.log('🗑️ Deleted existing Firebase document');
+                
+                // Upload clean data
+                const cleanData = {
+                    meals: meals || {},
+                    shopping: (shoppingList || []).map(item => ({
+                        id: item.id,
+                        name: item.name,
+                        completed: Boolean(item.completed),
+                        weekGenerated: item.weekGenerated || null
+                    })),
+                    lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
+                    updatedBy: currentUser.displayName || 'Family Member',
+                    familyMembers: [{
+                        uid: currentUser.uid,
+                        name: currentUser.displayName || 'Family Member',
+                        email: currentUser.email || '',
+                        photo: currentUser.photoURL || '',
+                        lastActive: new Date().toISOString()
+                    }],
+                    familyId: familyId
+                };
+                
+                await db.collection('families').doc(familyId).set(cleanData);
+                console.log('✅ Created clean Firebase document');
+                
+                updateSyncStatus('synced', 'Firebase data cleaned successfully');
+                alert('✅ Firebase data cleaned and synced successfully!');
+                
+            } catch (error) {
+                console.error('❌ Clean failed:', error);
+                updateSyncStatus('error', 'Clean failed: ' + error.message);
+                alert('❌ Clean failed: ' + error.message);
             }
         }
 
